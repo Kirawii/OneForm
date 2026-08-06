@@ -67,8 +67,8 @@
 
     <rect x="322" y="136" width="1060" height="224" rx="17" fill="#fff" stroke="#dedfd9"/>
     <text x="350" y="171" class="blue tiny" font-weight="750" letter-spacing="1.6">OFFICIAL-FORM ALIGNED / LOCAL-FIRST</text>
-    <text x="350" y="224" class="text" font-size="38" font-weight="780" letter-spacing="-1.8">不是简历展示页，</text>
-    <text x="350" y="267" class="text" font-size="38" font-weight="780" letter-spacing="-1.8">而是一份可复制的报名底稿。</text>
+    <text x="350" y="224" class="text" font-size="38" font-weight="780" letter-spacing="-1.8">信息只整理一次,</text>
+    <text x="350" y="267" class="text" font-size="38" font-weight="780" letter-spacing="-1.8">申请可以从容很多次。</text>
     <text x="350" y="296" class="muted small">按真实报名系统的字段结构整理；集中填写一次，之后在不同院校系统中逐项复制。</text>
     <rect x="350" y="316" width="148" height="31" rx="8" fill="#2366d1"/>
     <text x="374" y="336" fill="#fff" class="small" font-weight="700">复制核心报名信息</text>
