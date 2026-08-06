@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<title>OneForm · 推免报名信息库</title>
+<link rel="stylesheet" href="src/styles.css">
+</head>
+<body>
+<div class="app">
+<aside class="side">
+  <div class="brand">
+    <h1>OneForm</h1>
+    <p>按真实预推免报名系统的 13 步结构整理。字段填一次，之后逐项复制。</p>
+  </div>
+  <div class="progress">
+    <div class="progress-row"><span>资料完整度</span><strong id="progressText">0%</strong></div>
+    <div class="track"><div class="bar" id="progressBar"></div></div>
+  </div>
+  <nav id="nav">
+    <a href="#quick"><span class="step">00</span>快速格式</a>
+    <a href="#basic"><span class="step">02</span>基本信息</a>
+    <a href="#family"><span class="step">03</span>家庭主要成员</a>
+    <a href="#study"><span class="step">04</span>学习信息</a>
+    <a href="#language"><span class="step">05</span>外语水平</a>
+    <a href="#practice"><span class="step">06</span>实践经历</a>
+    <a href="#academic"><span class="step">07</span>学术成果</a>
+    <a href="#awards"><span class="step">08</span>奖励情况</a>
+    <a href="#application"><span class="step">09</span>申请信息</a>
+    <a href="#referee"><span class="step">10</span>推荐人信息</a>
+    <a href="#photo"><span class="step">11</span>上传照片</a>
+    <a href="#materials"><span class="step">12</span>上传材料</a>
+    <a href="#submit"><span class="step">13</span>提交前检查</a>
+  </nav>
+  <div class="side-bottom">
+    <button class="btn small" onclick="exportData()">导出 JSON 备份</button>
+    <button class="btn small" onclick="openImport()">导入备份</button>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="toolbar">
+    <button class="btn mobile" onclick="document.querySelector('#basic').scrollIntoView()">目录</button>
+    <div class="search"><span>⌕</span><input id="search" placeholder="搜索字段：例如出生地、排名、CET-6、竞赛、导师"></div>
+    <button class="btn desktop" onclick="copyAll()">复制全部已填字段</button>
+    <button class="btn primary" onclick="save(true)">保存</button>
+  </div>
+
+  <header class="hero">
+    <div class="eyebrow">Official-form aligned / 2027 recommendation exemption</div>
+    <h2>不是简历展示页，<br>而是一份可复制的报名底稿。</h2>
+    <p>栏目按东南大学真实报名页面的“基本信息—家庭成员—学习信息—外语—实践—成果—奖励—申请—推荐人—材料”流程重构；同时补齐其他高校系统常见的志愿、导师、学位类型、专项计划和报考类别字段。</p>
+    <div class="hero-actions">
+      <button class="btn primary" onclick="copyCore()">复制核心报名信息</button>
+      <button class="btn" onclick="exportData()">导出 JSON</button>
+      <button class="btn" onclick="openImport()">导入备份</button>
+      <button class="btn" onclick="window.print()">打印 / PDF</button>
+      <button class="btn danger" onclick="resetAll()">恢复初始模板</button>
+    </div>
+  </header>
+
+  <div class="source-note">
+    <div>◎</div>
+    <div><strong>公开版不内置任何真实个人资料。</strong>请只填写你已确认的经历与证明材料；未发表成果应与“已发表论文”分开记录，避免报名口径失实。</div>
+  </div>
+
+  <section id="quick">
+    <div class="head">
+      <div><h3>快速格式</h3><p>同一信息在不同系统中经常要求不同格式，以下内容由基础字段自动生成。</p></div>
+      <div class="actions"><button class="btn small" onclick="copyQuick()">复制本区</button></div>
+    </div>
+    <div class="derived" id="derived"></div>
+  </section>
+
+  <section id="basic">
+    <div class="head">
+      <div><h3>02 · 基本信息</h3><p>对应真实系统中的姓名、证件、出生信息、户籍地址和联系方式。</p></div>
+      <div class="actions"><button class="btn small" onclick="copySection('basic')">复制本区</button></div>
+    </div>
+    <div class="grid three">
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>姓名</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('nameCn')">⧉</button></div></div>
+        <input data-key="nameCn" id="nameCn" type="text" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>姓名拼音（系统格式）</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('namePinyin')">⧉</button></div></div>
+        <input data-key="namePinyin" id="namePinyin" type="text" value="">
+        <div class="hint">东南大学页面要求按“姓在前、字母间不加字符”的格式填写。</div>
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>英文姓名（常规格式）</label><div class="fieldtools"><button class="icon" onclick="copyKey('nameEn')">⧉</button></div></div>
+        <input data-key="nameEn" id="nameEn" type="text" value="">
+      </div>
+
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>证件类型</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('idType')">⧉</button></div></div>
+        <input data-key="idType" id="idType" type="text" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>证件号码</label><div class="fieldtools"><span class="badge danger">敏感</span><button class="icon" onclick="copyKey('idNumber')">⧉</button></div></div>
+        <input data-key="idNumber" id="idNumber" type="text" placeholder="请自行补全；不从截图猜测">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>出生日期</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('birthdayCompact')">⧉</button></div></div>
+        <input data-key="birthdayCompact" id="birthdayCompact" type="text" value="">
+        <div class="hint">网页常用格式：YYYYMMDD。</div>
+      </div>
+
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>民族</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('ethnicity')">⧉</button></div></div>
+        <input data-key="ethnicity" id="ethnicity" type="text" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>性别</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('gender')">⧉</button></div></div>
+        <input data-key="gender" id="gender" type="text" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>政治面貌</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('politicalStatus')">⧉</button></div></div>
+        <input data-key="politicalStatus" id="politicalStatus" type="text" value="">
+      </div>
+
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>现役军人码</label><div class="fieldtools"><button class="icon" onclick="copyKey('militaryStatus')">⧉</button></div></div>
+        <input data-key="militaryStatus" id="militaryStatus" type="text" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>出生地（行政代码 + 地区）</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('birthplace')">⧉</button></div></div>
+        <input data-key="birthplace" id="birthplace" type="text" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>籍贯地（行政代码 + 地区）</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('nativePlace')">⧉</button></div></div>
+        <input data-key="nativePlace" id="nativePlace" type="text" value="">
+      </div>
+
+      <div class="field span2" data-search="">
+        <div class="fieldtop"><label>通讯地址</label><div class="fieldtools"><span class="badge danger">敏感</span><button class="icon" onclick="copyKey('mailingAddress')">⧉</button></div></div>
+        <input data-key="mailingAddress" id="mailingAddress" type="text" placeholder="请补全当前可收件的详细地址">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>通讯地址邮政编码</label><div class="fieldtools"><button class="icon" onclick="copyKey('postalCode')">⧉</button></div></div>
+        <input data-key="postalCode" id="postalCode" type="text" value="">
+      </div>
+
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>固定电话</label><div class="fieldtools"><button class="icon" onclick="copyKey('landline')">⧉</button></div></div>
+        <input data-key="landline" id="landline" type="text" placeholder="无可留空">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>移动电话</label><div class="fieldtools"><span class="badge danger">敏感</span><button class="icon" onclick="copyKey('phone')">⧉</button></div></div>
+        <input data-key="phone" id="phone" type="tel" placeholder="请补全">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>考生电子邮箱</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('email')">⧉</button></div></div>
+        <input data-key="email" id="email" type="email" placeholder="请补全常用邮箱">
+      </div>
+    </div>
+  </section>
+
+  <section id="family">
+    <div class="head">
+      <div><h3>03 · 家庭主要成员</h3><p>真实系统通常要求至少填写一行：姓名、关系、工作单位及职务、联系电话。</p></div>
+      <div class="actions"><button class="btn small" onclick="copyTable('familyTable','家庭主要成员')">复制表格</button></div>
+    </div>
+    <div class="tablewrap">
+      <table id="familyTable">
+        <thead><tr><th>姓名</th><th>关系</th><th>工作单位及职务</th><th>联系电话</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><input data-key="family1Name" value=""></td>
+            <td><input data-key="family1Relation" value=""></td>
+            <td><input data-key="family1Work" value=""></td>
+            <td><input data-key="family1Phone" placeholder="请核对后填写"></td>
+          </tr>
+          <tr>
+            <td><input data-key="family2Name" value=""></td>
+            <td><input data-key="family2Relation" value=""></td>
+            <td><input data-key="family2Work" value=""></td>
+            <td><input data-key="family2Phone" placeholder="请核对后填写"></td>
+          </tr>
+          <tr>
+            <td><input data-key="family3Name" placeholder="可选"></td>
+            <td><input data-key="family3Relation" placeholder="关系"></td>
+            <td><input data-key="family3Work" placeholder="工作单位及职务"></td>
+            <td><input data-key="family3Phone" placeholder="联系电话"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="study">
+    <div class="head">
+      <div><h3>04 · 学习信息</h3><p>院校、院系、专业、入学年月、毕业年月、成绩及排名必须拆开保存。</p></div>
+      <div class="actions"><button class="btn small" onclick="copySection('study')">复制本区</button></div>
+    </div>
+    <div class="grid three">
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>本科学校（代码 + 名称）</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('universityCodeName')">⧉</button></div></div>
+        <input data-key="universityCodeName" id="universityCodeName" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>本科院系</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('college')">⧉</button></div></div>
+        <input data-key="college" id="college" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>本科专业（代码 + 名称）</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('majorCodeName')">⧉</button></div></div>
+        <input data-key="majorCodeName" id="majorCodeName" value="">
+      </div>
+
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>入学年月</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('enrollmentMonth')">⧉</button></div></div>
+        <input data-key="enrollmentMonth" id="enrollmentMonth" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>预计毕业年月</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('graduationMonth')">⧉</button></div></div>
+        <input data-key="graduationMonth" id="graduationMonth" value="">
+        <div class="hint">已按 2023 级四年制本科修正为 2027 年 6 月。</div>
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>在校注册学号</label><div class="fieldtools"><span class="badge danger">敏感</span><button class="icon" onclick="copyKey('studentId')">⧉</button></div></div>
+        <input data-key="studentId" id="studentId" value="">
+      </div>
+
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>成绩类型</label><div class="fieldtools"><button class="icon" onclick="copyKey('scoreType')">⧉</button></div></div>
+        <input data-key="scoreType" id="scoreType" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>平均成绩</label><div class="fieldtools"><span class="badge warn">需更新</span><button class="icon" onclick="copyKey('averageScore')">⧉</button></div></div>
+        <input data-key="averageScore" id="averageScore" value="">
+        <div class="hint">请以最新盖章成绩单或排名证明为准。</div>
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>GPA / 满分</label><div class="fieldtools"><button class="icon" onclick="copyKey('gpa')">⧉</button></div></div>
+        <input data-key="gpa" id="gpa" placeholder="例如 4.xx/5.00">
+      </div>
+
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>排名类型</label><div class="fieldtools"><button class="icon" onclick="copyKey('rankType')">⧉</button></div></div>
+        <input data-key="rankType" id="rankType" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>排名</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('rankNumber')">⧉</button></div></div>
+        <input data-key="rankNumber" id="rankNumber" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>排名总人数</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('rankTotal')">⧉</button></div></div>
+        <input data-key="rankTotal" id="rankTotal" value="">
+      </div>
+
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>是否来自拔尖人才培养基地</label><div class="fieldtools"><button class="icon" onclick="copyKey('eliteBase')">⧉</button></div></div>
+        <input data-key="eliteBase" id="eliteBase" value="">
+      </div>
+      <div class="field span2" data-search="">
+        <div class="fieldtop"><label>拔尖人才培养基地名称</label><div class="fieldtools"><button class="icon" onclick="copyKey('eliteBaseName')">⧉</button></div></div>
+        <input data-key="eliteBaseName" id="eliteBaseName" placeholder="选择“否”时留空">
+      </div>
+    </div>
+  </section>
+
+  <section id="language">
+    <div class="head">
+      <div><h3>05 · 外语水平</h3><p>每一项外语成绩单独一行；系统填几项，通常就要上传几张对应证明。</p></div>
+      <div class="actions"><button class="btn small" onclick="copyTable('languageTable','外语水平')">复制表格</button></div>
+    </div>
+    <div class="tablewrap">
+      <table id="languageTable">
+        <thead><tr><th>外语水平</th><th>成绩</th><th>取得成绩时间</th><th>备注</th></tr></thead>
+        <tbody>
+          <tr><td><input data-key="lang1Type" value=""></td><td><input data-key="lang1Score" value=""></td><td><input data-key="lang1Date" value=""></td><td><input data-key="lang1Note"></td></tr>
+          <tr><td><input data-key="lang2Type" value=""></td><td><input data-key="lang2Score" value=""></td><td><input data-key="lang2Date" value=""></td><td><input data-key="lang2Note"></td></tr>
+          <tr><td><input data-key="lang3Type" placeholder="IELTS / TOEFL / 其他"></td><td><input data-key="lang3Score"></td><td><input data-key="lang3Date" placeholder="YYYY-MM"></td><td><input data-key="lang3Note"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="practice">
+    <div class="head">
+      <div><h3>06 · 实践经历</h3><p>完全按东南大学页面的三类字段：科研训练、实习实践、社会工作。</p></div>
+      <div class="actions"><button class="btn small" onclick="copySection('practice')">复制本区</button><button class="btn small" onclick="copySanitizedPractice()">复制去标点版</button></div>
+    </div>
+    <div class="grid">
+      <div class="field span2" data-search="">
+        <div class="fieldtop"><label>科研训练（起止时间、项目名称、项目级别、排名）</label><div class="fieldtools"><span class="badge">官网字段</span><button class="icon" onclick="copyKey('researchTraining')">⧉</button></div></div>
+        <textarea class="tall" data-key="researchTraining" id="researchTraining"></textarea>
+      </div>
+      <div class="field span2" data-search="">
+        <div class="fieldtop"><label>实习实践（起止时间、实习单位、主要工作内容）</label><div class="fieldtools"><span class="badge">官网字段</span><button class="icon" onclick="copyKey('internshipExperience')">⧉</button></div></div>
+        <textarea class="tall" data-key="internshipExperience" id="internshipExperience"></textarea>
+      </div>
+      <div class="field span2" data-search="">
+        <div class="fieldtop"><label>社会工作（起止时间、社会工作名称、主要工作内容）</label><div class="fieldtools"><span class="badge">官网字段</span><button class="icon" onclick="copyKey('socialExperience')">⧉</button></div></div>
+        <textarea data-key="socialExperience" id="socialExperience"></textarea>
+      </div>
+      <div class="field span2" data-search="">
+        <div class="fieldtop"><label>其他实习 / 已获 Offer（用于允许补充的系统）</label><div class="fieldtools"><span class="badge warn">不等同已入职</span><button class="icon" onclick="copyKey('otherInternship')">⧉</button></div></div>
+        <textarea data-key="otherInternship" id="otherInternship"></textarea>
+      </div>
+      <div class="copystrip span2">东南大学截图中的文本框提示“内容中不得含有 ,、#”。“复制去标点版”会自动去掉英文逗号、中文顿号和井号，并把中文逗号替换为分号。</div>
+    </div>
+  </section>
+
+  <section id="academic">
+    <div class="head">
+      <div><h3>07 · 学术成果</h3><p>严格区分“已发表”与“在投”。在投论文不能填入“已发表论文”栏目。</p></div>
+      <div class="actions"><button class="btn small" onclick="copySection('academic')">复制本区</button></div>
+    </div>
+    <div class="grid">
+      <div class="field span2" data-search="">
+        <div class="fieldtop"><label>已发表论文（作者、题目、刊物/会议、发表时间）</label><div class="fieldtools"><span class="badge">官网字段</span><button class="icon" onclick="copyKey('publishedPapers')">⧉</button></div></div>
+        <textarea data-key="publishedPapers" id="publishedPapers"></textarea>
+        <div class="hint">在投成果请单独记录，不要填入“已发表论文”。</div>
+      </div>
+      <div class="field span2" data-search="">
+        <div class="fieldtop"><label>已取得专利（专利权人、专利名称、授权或受理时间）</label><div class="fieldtools"><span class="badge">官网字段</span><button class="icon" onclick="copyKey('patents')">⧉</button></div></div>
+        <textarea data-key="patents" id="patents"></textarea>
+      </div>
+      <div class="field span2" data-search="">
+        <div class="fieldtop"><label>在投 / 其他学术成果（用于允许填写的系统）</label><div class="fieldtools"><span class="badge warn">非已发表</span><button class="icon" onclick="copyKey('submittedWork')">⧉</button></div></div>
+        <textarea class="tall" data-key="submittedWork" id="submittedWork"></textarea>
+      </div>
+    </div>
+
+    <div class="head" style="margin-top:20px">
+      <div><h3 style="font-size:15px">学科竞赛</h3><p>对应官网字段：获奖人、获奖项目名称、竞赛名称、获奖等级、获奖时间。</p></div>
+      <div class="actions"><button class="btn small" onclick="copyTable('competitionTable','学科竞赛')">复制表格</button></div>
+    </div>
+    <div class="tablewrap">
+      <table id="competitionTable">
+        <thead><tr><th>获奖人 / 排名</th><th>获奖项目名称</th><th>竞赛名称</th><th>获奖等级</th><th>获奖时间</th></tr></thead>
+        <tbody>
+          <tr><td><input data-key="comp1Person" value=""></td><td><input data-key="comp1Project" value=""></td><td><input data-key="comp1Name" value=""></td><td><input data-key="comp1Level" value=""></td><td><input data-key="comp1Date" value=""></td></tr>
+          <tr><td><input data-key="comp2Person" value=""></td><td><input data-key="comp2Project" value=""></td><td><input data-key="comp2Name" value=""></td><td><input data-key="comp2Level" value=""></td><td><input data-key="comp2Date" value=""></td></tr>
+          <tr><td><input data-key="comp3Person" value=""></td><td><input data-key="comp3Project" value=""></td><td><input data-key="comp3Name" value=""></td><td><input data-key="comp3Level" value=""></td><td><input data-key="comp3Date" value=""></td></tr>
+          <tr><td><input data-key="comp4Person" value=""></td><td><input data-key="comp4Project" value=""></td><td><input data-key="comp4Name" value=""></td><td><input data-key="comp4Level" value=""></td><td><input data-key="comp4Date" value=""></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="awards">
+    <div class="head">
+      <div><h3>08 · 奖励情况</h3><p>只填本科期间校级以上（含）荣誉奖励，不与学科竞赛混填。</p></div>
+      <div class="actions"><button class="btn small" onclick="copyTable('awardTable','荣誉奖励')">复制表格</button></div>
+    </div>
+    <div class="tablewrap">
+      <table id="awardTable">
+        <thead><tr><th>获奖名称</th><th>获奖等级</th><th>获奖时间</th><th>备注</th></tr></thead>
+        <tbody>
+          <tr><td><input data-key="award1Name" value=""></td><td><input data-key="award1Level" value=""></td><td><input data-key="award1Date" value=""></td><td><input data-key="award1Note"></td></tr>
+          <tr><td><input data-key="award2Name" placeholder="请按证书补充"></td><td><input data-key="award2Level" placeholder="校级/省级/国家级"></td><td><input data-key="award2Date" placeholder="YYYY年"></td><td><input data-key="award2Note"></td></tr>
+          <tr><td><input data-key="award3Name" placeholder="可选"></td><td><input data-key="award3Level"></td><td><input data-key="award3Date"></td><td><input data-key="award3Note"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="application">
+    <div class="head">
+      <div><h3>09 · 申请信息</h3><p>各校字段名称略有差异，但志愿、培养类型、导师、专项计划和报考类别高度重复。</p></div>
+      <div class="actions"><button class="btn small" onclick="copySection('application')">复制本区</button></div>
+    </div>
+    <div class="grid three">
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>招生类型</label><div class="fieldtools"><span class="badge">常见必填</span><button class="icon" onclick="copyKey('admissionType')">⧉</button></div></div>
+        <input data-key="admissionType" id="admissionType" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>学位类型</label><div class="fieldtools"><button class="icon" onclick="copyKey('degreeType')">⧉</button></div></div>
+        <input data-key="degreeType" id="degreeType" placeholder="学术学位 / 专业学位">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>学习方式</label><div class="fieldtools"><button class="icon" onclick="copyKey('studyMode')">⧉</button></div></div>
+        <input data-key="studyMode" id="studyMode" value="">
+      </div>
+
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>申请学院</label><div class="fieldtools"><button class="icon" onclick="copyKey('targetCollege')">⧉</button></div></div>
+        <input data-key="targetCollege" id="targetCollege" placeholder="每所学校单独修改">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>申请专业</label><div class="fieldtools"><button class="icon" onclick="copyKey('targetMajor')">⧉</button></div></div>
+        <input data-key="targetMajor" id="targetMajor" placeholder="专业代码 + 名称">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>申请研究方向</label><div class="fieldtools"><button class="icon" onclick="copyKey('targetDirection')">⧉</button></div></div>
+        <input data-key="targetDirection" id="targetDirection" value="">
+      </div>
+
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>意向导师</label><div class="fieldtools"><button class="icon" onclick="copyKey('targetSupervisor')">⧉</button></div></div>
+        <input data-key="targetSupervisor" id="targetSupervisor" placeholder="暂不区分导师 / 具体导师姓名">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>是否服从调剂</label><div class="fieldtools"><button class="icon" onclick="copyKey('adjustment')">⧉</button></div></div>
+        <input data-key="adjustment" id="adjustment" placeholder="是 / 否">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>报考类别</label><div class="fieldtools"><button class="icon" onclick="copyKey('employmentCategory')">⧉</button></div></div>
+        <input data-key="employmentCategory" id="employmentCategory" value="">
+      </div>
+
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>专项计划</label><div class="fieldtools"><button class="icon" onclick="copyKey('specialPlan')">⧉</button></div></div>
+        <input data-key="specialPlan" id="specialPlan" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>本校专项计划</label><div class="fieldtools"><button class="icon" onclick="copyKey('schoolSpecialPlan')">⧉</button></div></div>
+        <input data-key="schoolSpecialPlan" id="schoolSpecialPlan" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>导师联系状态（自用）</label><div class="fieldtools"><button class="icon" onclick="copyKey('contactStatus')">⧉</button></div></div>
+        <input data-key="contactStatus" id="contactStatus" placeholder="未联系 / 已联系 / 已回复 / 已面试">
+      </div>
+
+      <div class="field span3" data-search="">
+        <div class="fieldtop"><label>个人陈述 / 补充信息底稿</label><div class="fieldtools"><button class="icon" onclick="copyKey('personalStatement')">⧉</button></div></div>
+        <textarea class="tall" data-key="personalStatement" id="personalStatement"></textarea>
+      </div>
+    </div>
+  </section>
+
+  <section id="referee">
+    <div class="head">
+      <div><h3>10 · 推荐人信息</h3><p>硕士推免通常不强制；申请直博时，多数学校要求两位副教授及以上专家。</p></div>
+      <div class="actions"><button class="btn small" onclick="copyTable('refereeTable','推荐人信息')">复制表格</button></div>
+    </div>
+    <div class="tablewrap">
+      <table id="refereeTable">
+        <thead><tr><th>姓名</th><th>职称</th><th>单位 / 院系</th><th>与申请人关系</th><th>邮箱</th><th>电话</th></tr></thead>
+        <tbody>
+          <tr><td><input data-key="ref1Name" value=""></td><td><input data-key="ref1Title" value=""></td><td><input data-key="ref1Org" value=""></td><td><input data-key="ref1Relation" value=""></td><td><input data-key="ref1Email" value=""></td><td><input data-key="ref1Phone" placeholder="按需填写"></td></tr>
+          <tr><td><input data-key="ref2Name" placeholder="直博时补充"></td><td><input data-key="ref2Title"></td><td><input data-key="ref2Org"></td><td><input data-key="ref2Relation"></td><td><input data-key="ref2Email"></td><td><input data-key="ref2Phone"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="photo">
+    <div class="head">
+      <div><h3>11 · 上传照片</h3><p>各校尺寸不同，建议同时准备原始证件照和多个压缩版本。</p></div>
+      <div class="actions"><button class="btn small" onclick="copySection('photo')">复制本区</button></div>
+    </div>
+    <div class="grid three">
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>背景色</label><div class="fieldtools"><button class="icon" onclick="copyKey('photoBackground')">⧉</button></div></div>
+        <input data-key="photoBackground" id="photoBackground" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>常备像素版本</label><div class="fieldtools"><button class="icon" onclick="copyKey('photoPixels')">⧉</button></div></div>
+        <input data-key="photoPixels" id="photoPixels" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>常备文件大小</label><div class="fieldtools"><button class="icon" onclick="copyKey('photoSizes')">⧉</button></div></div>
+        <input data-key="photoSizes" id="photoSizes" value="">
+      </div>
+    </div>
+  </section>
+
+  <section id="materials">
+    <div class="head">
+      <div><h3>12 · 上传材料</h3><p>依据真实官方通知整理；每所学校提交前再核对格式、页数和单文件大小。</p></div>
+      <div class="actions"><button class="btn small" onclick="copyFilenames()">复制文件名清单</button></div>
+    </div>
+    <div class="checks" id="materialChecks">
+      <label class="check"><input type="checkbox" data-check="applicationForm"><span>系统生成的推免申请表（签字、盖章）</span></label>
+      <label class="check"><input type="checkbox" data-check="idCard"><span>有效身份证明（身份证正反面）</span></label>
+      <label class="check"><input type="checkbox" data-check="studentProof"><span>教育部学籍信息在线验证报告 / 在学证明</span></label>
+      <label class="check"><input type="checkbox" data-check="transcript"><span>本科阶段成绩单（教务部门或学院盖章）</span></label>
+      <label class="check"><input type="checkbox" data-check="rankProof"><span>成绩 / 绩点 / 综合排名证明</span></label>
+      <label class="check"><input type="checkbox" data-check="languageProof"><span>CET-4、CET-6 等外语成绩证明</span></label>
+      <label class="check"><input type="checkbox" data-check="academicProof"><span>论文投稿证明、学术成果与竞赛证明</span></label>
+      <label class="check"><input type="checkbox" data-check="awardProof"><span>校级以上荣誉奖励证明</span></label>
+      <label class="check"><input type="checkbox" data-check="practiceProof"><span>科研训练、实习实践、社会工作证明</span></label>
+      <label class="check"><input type="checkbox" data-check="resume"><span>一页 A4 个人简历（部分学院强制）</span></label>
+      <label class="check"><input type="checkbox" data-check="photo"><span>符合系统要求的证件照</span></label>
+      <label class="check"><input type="checkbox" data-check="recommendation"><span>专家推荐信（通常仅直博必需）</span></label>
+      <label class="check"><input type="checkbox" data-check="advisorConsent"><span>拟报考导师同意证明（部分直博项目要求）</span></label>
+      <label class="check"><input type="checkbox" data-check="other"><span>学院要求的个人陈述、研究计划或补充材料</span></label>
+    </div>
+
+    <div class="head" style="margin-top:20px">
+      <div><h3 style="font-size:15px">建议统一文件名</h3><p>名称随中文姓名自动更新。</p></div>
+    </div>
+    <div class="filename-list" id="filenameList"></div>
+  </section>
+
+  <section id="submit">
+    <div class="head">
+      <div><h3>13 · 提交前检查</h3><p>真实系统通常提交后无法自行修改，必须在最后一步逐项核对。</p></div>
+      <div class="actions"><button class="btn small" onclick="clearSubmitChecks()">清空勾选</button></div>
+    </div>
+    <div class="warning"><strong>重点检查：</strong>提交前请逐项核对日期、排名口径、成果状态和证明材料，确保与目标院校官网要求一致。</div>
+    <div class="checks" id="submitChecks" style="margin-top:12px">
+      <label class="check"><input type="checkbox" data-submit-check="identity"><span>姓名、拼音、身份证号与证件完全一致</span></label>
+      <label class="check"><input type="checkbox" data-submit-check="contact"><span>手机号和邮箱为近期常用联系方式</span></label>
+      <label class="check"><input type="checkbox" data-submit-check="education"><span>学校、院系、专业代码和毕业年月无误</span></label>
+      <label class="check"><input type="checkbox" data-submit-check="rank"><span>成绩、排名和总人数与盖章证明一致</span></label>
+      <label class="check"><input type="checkbox" data-submit-check="language"><span>外语成绩与上传证书逐项对应</span></label>
+      <label class="check"><input type="checkbox" data-submit-check="publication"><span>已发表、在投、竞赛和荣誉没有混填</span></label>
+      <label class="check"><input type="checkbox" data-submit-check="choice"><span>学院、专业、研究方向、导师和学位类型确认无误</span></label>
+      <label class="check"><input type="checkbox" data-submit-check="files"><span>所有 PDF 可正常打开，页码方向正确，文件未超限</span></label>
+    </div>
+  </section>
+</main>
+</div>
+
+<dialog id="jsonDialog">
+  <div class="modalhead"><strong id="dialogTitle">导入备份</strong><button class="btn small" onclick="jsonDialog.close()">关闭</button></div>
+  <div class="modalbody"><textarea id="jsonArea" spellcheck="false"></textarea><div class="hint" id="dialogHint"></div></div>
+  <div class="modalfoot"><button class="btn primary" id="applyImportBtn" onclick="applyImport()">应用导入</button></div>
+</dialog>
+<input id="fileInput" type="file" accept=".json,application/json" hidden>
+<div class="toast" id="toast"></div>
+
+<script src="src/app.js"></script>
+</body>
+</html>

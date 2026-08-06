@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<title>OneForm · 推免报名信息库</title>
+<style>
+:root{
+  --bg:#f5f5f2;--panel:#ffffff;--panel2:#fafaf8;--text:#20211f;--muted:#74766f;
+  --line:#dedfd9;--accent:#2366d1;--accent2:#eaf1ff;--ok:#247653;--warn:#b46b19;
+  --danger:#b14343;--shadow:0 16px 45px rgba(26,31,39,.08);--radius:17px;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#151615;--panel:#1e1f1e;--panel2:#252624;--text:#f0f1ed;--muted:#a9aaa4;
+    --line:#393b37;--accent:#91aaff;--accent2:#29324c;--ok:#7ac69f;--warn:#e8a654;
+    --danger:#ff9898;--shadow:0 16px 45px rgba(0,0,0,.28)
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:
+  radial-gradient(circle at 8% 0,rgba(47,103,209,.09),transparent 34rem),
+  radial-gradient(circle at 95% 12%,rgba(46,139,103,.07),transparent 30rem),var(--bg);
+  color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",
+  "Hiragino Sans GB","Microsoft YaHei",sans-serif
+}
+button,input,textarea,select{font:inherit}
+button{color:inherit}
+.app{width:min(1500px,100%);margin:auto;padding:18px;display:grid;grid-template-columns:272px minmax(0,1fr);gap:20px}
+.side{
+  position:sticky;top:18px;height:calc(100vh - 36px);padding:17px;overflow:hidden;
+  display:flex;flex-direction:column;background:color-mix(in srgb,var(--panel) 88%,transparent);
+  border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(18px)
+}
+.brand{padding:5px 4px 16px;border-bottom:1px solid var(--line)}
+.brand h1{font-size:20px;letter-spacing:-.03em;margin:0 0 7px}
+.brand p{font-size:12px;line-height:1.65;color:var(--muted);margin:0}
+.progress{padding:15px 4px 8px}
+.progress-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:7px}
+.track{height:7px;background:var(--panel2);border-radius:99px;overflow:hidden}
+.bar{height:100%;width:0;background:var(--accent);border-radius:99px;transition:.2s}
+nav{overflow:auto;padding:7px 0}
+nav a{
+  display:flex;gap:10px;align-items:center;text-decoration:none;color:var(--muted);
+  font-size:13px;padding:9px 10px;margin:2px 0;border-radius:10px
+}
+nav a:hover,nav a.active{background:var(--panel2);color:var(--text)}
+.step{width:25px;height:25px;display:grid;place-items:center;border:1px solid var(--line);border-radius:8px;font-size:10px;flex:none}
+.side-bottom{margin-top:auto;border-top:1px solid var(--line);padding-top:11px;display:grid;gap:8px}
+.main{min-width:0}
+.toolbar{
+  position:sticky;top:18px;z-index:20;padding:11px;display:flex;gap:9px;align-items:center;
+  margin-bottom:17px;background:color-mix(in srgb,var(--panel) 88%,transparent);
+  border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow);backdrop-filter:blur(18px)
+}
+.search{position:relative;flex:1}
+.search span{position:absolute;left:13px;top:9px;color:var(--muted)}
+.search input{
+  width:100%;height:40px;padding:0 13px 0 37px;border:1px solid var(--line);
+  border-radius:11px;background:var(--panel);color:var(--text);outline:none
+}
+.search input:focus{border-color:var(--accent)}
+.btn{
+  min-height:39px;padding:0 13px;border:1px solid var(--line);border-radius:10px;
+  background:var(--panel);cursor:pointer;white-space:nowrap;transition:.15s
+}
+.btn:hover{border-color:var(--accent);transform:translateY(-1px)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:white}
+.btn.small{min-height:31px;padding:0 9px;font-size:12px;border-radius:8px}
+.btn.danger{color:var(--danger)}
+.hero,section{
+  background:color-mix(in srgb,var(--panel) 92%,transparent);
+  border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)
+}
+.hero{padding:27px 29px;margin-bottom:17px}
+.eyebrow{font-size:11px;color:var(--accent);font-weight:750;letter-spacing:.14em;text-transform:uppercase}
+.hero h2{font-size:clamp(27px,4vw,45px);letter-spacing:-.055em;line-height:1.1;margin:9px 0 10px}
+.hero p{font-size:13px;color:var(--muted);line-height:1.8;max-width:900px;margin:0}
+.hero-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.source-note{
+  display:flex;gap:11px;padding:14px 16px;margin-bottom:17px;background:var(--panel);
+  border:1px solid var(--line);border-radius:13px;color:var(--muted);font-size:12px;line-height:1.7
+}
+.source-note strong{color:var(--text)}
+section{padding:23px;margin-bottom:17px;scroll-margin-top:94px}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:17px}
+.head h3{margin:0 0 5px;font-size:19px;letter-spacing:-.025em}
+.head p{margin:0;font-size:12px;line-height:1.65;color:var(--muted)}
+.actions{display:flex;gap:7px;flex-wrap:wrap}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.span2{grid-column:span 2}.span3{grid-column:span 3}
+.field{
+  min-width:0;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--panel)
+}
+.field.hidden{display:none}
+.fieldtop{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:7px}
+.field label{font-size:12px;font-weight:720}
+.fieldtools{display:flex;gap:5px}
+.icon{
+  width:28px;height:28px;padding:0;display:grid;place-items:center;border:1px solid var(--line);
+  border-radius:8px;background:transparent;cursor:pointer;font-size:12px
+}
+.icon:hover{border-color:var(--accent);color:var(--accent)}
+input[type=text],input[type=email],input[type=tel],input[type=date],textarea,select{
+  width:100%;padding:9px 10px;border:1px solid transparent;border-radius:9px;
+  background:var(--panel2);color:var(--text);outline:none;line-height:1.55
+}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);background:var(--panel)}
+textarea{min-height:88px;resize:vertical}
+textarea.tall{min-height:145px}
+.hint{font-size:10.5px;color:var(--muted);line-height:1.55;margin-top:6px}
+.badge{font-size:10px;padding:4px 7px;border-radius:99px;background:var(--accent2);color:var(--accent)}
+.badge.warn{background:color-mix(in srgb,var(--warn) 14%,transparent);color:var(--warn)}
+.badge.danger{background:color-mix(in srgb,var(--danger) 13%,transparent);color:var(--danger)}
+.derived{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
+.card{padding:13px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+.card .k{font-size:10px;color:var(--muted);margin-bottom:7px}
+.card .v{min-height:39px;font-size:13px;line-height:1.55;word-break:break-word}
+.card .ops{display:flex;gap:6px;margin-top:9px}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse;min-width:760px;background:var(--panel)}
+th,td{border-bottom:1px solid var(--line);padding:9px;vertical-align:top}
+th{font-size:11px;color:var(--muted);text-align:left;background:var(--panel2)}
+td input,td textarea,td select{min-width:125px}
+td textarea{min-height:65px}
+.table-input-wrap{display:grid;grid-template-columns:minmax(125px,1fr) 28px;align-items:center;gap:6px}
+.table-input-wrap>input,.table-input-wrap>textarea,.table-input-wrap>select{min-width:0}
+.table-copy{background:var(--panel2);flex:none}
+tr:last-child td{border-bottom:0}
+.copystrip{
+  margin-top:10px;padding:11px 12px;border:1px dashed var(--line);border-radius:10px;
+  color:var(--muted);font-size:11px;line-height:1.6
+}
+.checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.check{
+  display:flex;align-items:flex-start;gap:9px;padding:10px 11px;border:1px solid var(--line);
+  border-radius:10px;background:var(--panel);font-size:12px;line-height:1.55
+}
+.check input{margin-top:3px;accent-color:var(--accent)}
+.check.done span{text-decoration:line-through;color:var(--muted)}
+.filename-list{display:grid;gap:8px}
+.filename{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 11px;
+  border:1px solid var(--line);border-radius:10px;background:var(--panel);font-size:12px
+}
+.warning{
+  padding:12px 14px;border-radius:11px;border:1px solid color-mix(in srgb,var(--warn) 35%,var(--line));
+  background:color-mix(in srgb,var(--warn) 8%,var(--panel));color:var(--muted);font-size:12px;line-height:1.7
+}
+.warning strong{color:var(--warn)}
+.toast{
+  position:fixed;right:23px;bottom:23px;z-index:99;padding:11px 14px;border-radius:10px;
+  background:var(--text);color:var(--bg);font-size:12px;opacity:0;transform:translateY(8px);
+  pointer-events:none;transition:.2s;box-shadow:var(--shadow)
+}
+.toast.show{opacity:1;transform:none}
+dialog{
+  width:min(760px,calc(100vw - 30px));padding:0;border:1px solid var(--line);border-radius:17px;
+  color:var(--text);background:var(--panel);box-shadow:0 30px 90px rgba(0,0,0,.3)
+}
+dialog::backdrop{background:rgba(0,0,0,.42);backdrop-filter:blur(4px)}
+.modalhead,.modalfoot{display:flex;align-items:center;gap:9px;padding:14px 16px}
+.modalhead{justify-content:space-between;border-bottom:1px solid var(--line)}
+.modalbody{padding:16px}.modalbody textarea{min-height:370px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.modalfoot{justify-content:flex-end;border-top:1px solid var(--line)}
+.mobile{display:none}
+@media(max-width:1050px){
+  .app{grid-template-columns:1fr}.side{display:none}.mobile{display:inline-flex}.toolbar{top:9px}
+  .derived,.grid.three{grid-template-columns:repeat(2,minmax(0,1fr))}.span3{grid-column:span 2}
+}
+@media(max-width:700px){
+  .app{padding:9px}.toolbar{flex-wrap:wrap}.search{flex-basis:100%;order:-1}
+  .hero,section{padding:17px}.grid,.grid.three,.derived,.checks{grid-template-columns:1fr}
+  .span2,.span3{grid-column:span 1}.head{flex-direction:column}.desktop{display:none}
+}
+@media print{
+  .side,.toolbar,.hero-actions,.actions,.fieldtools,.source-note,.toast{display:none!important}
+  body{background:white;color:black}.app{display:block;padding:0}.hero,section{box-shadow:none;break-inside:avoid}
+  input,textarea,select{background:white!important;color:black!important;border:0!important;padding-left:0!important}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side">
+  <div class="brand">
+    <h1>OneForm</h1>
+    <p>按真实预推免报名系统的 13 步结构整理。字段填一次，之后逐项复制。</p>
+  </div>
+  <div class="progress">
+    <div class="progress-row"><span>资料完整度</span><strong id="progressText">0%</strong></div>
+    <div class="track"><div class="bar" id="progressBar"></div></div>
+  </div>
+  <nav id="nav">
+    <a href="#quick"><span class="step">00</span>快速格式</a>
+    <a href="#basic"><span class="step">02</span>基本信息</a>
+    <a href="#family"><span class="step">03</span>家庭主要成员</a>
+    <a href="#study"><span class="step">04</span>学习信息</a>
+    <a href="#language"><span class="step">05</span>外语水平</a>
+    <a href="#practice"><span class="step">06</span>实践经历</a>
+    <a href="#academic"><span class="step">07</span>学术成果</a>
+    <a href="#awards"><span class="step">08</span>奖励情况</a>
+    <a href="#application"><span class="step">09</span>申请信息</a>
+    <a href="#referee"><span class="step">10</span>推荐人信息</a>
+    <a href="#photo"><span class="step">11</span>上传照片</a>
+    <a href="#materials"><span class="step">12</span>上传材料</a>
+    <a href="#submit"><span class="step">13</span>提交前检查</a>
+  </nav>
+  <div class="side-bottom">
+    <button class="btn small" onclick="exportData()">导出 JSON 备份</button>
+    <button class="btn small" onclick="openImport()">导入备份</button>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="toolbar">
+    <button class="btn mobile" onclick="document.querySelector('#basic').scrollIntoView()">目录</button>
+    <div class="search"><span>⌕</span><input id="search" placeholder="搜索字段：例如出生地、排名、CET-6、竞赛、导师"></div>
+    <button class="btn desktop" onclick="copyAll()">复制全部已填字段</button>
+    <button class="btn primary" onclick="save(true)">保存</button>
+  </div>
+
+  <header class="hero">
+    <div class="eyebrow">Official-form aligned / 2027 recommendation exemption</div>
+    <h2>不是简历展示页，<br>而是一份可复制的报名底稿。</h2>
+    <p>栏目按东南大学真实报名页面的“基本信息—家庭成员—学习信息—外语—实践—成果—奖励—申请—推荐人—材料”流程重构；同时补齐其他高校系统常见的志愿、导师、学位类型、专项计划和报考类别字段。</p>
+    <div class="hero-actions">
+      <button class="btn primary" onclick="copyCore()">复制核心报名信息</button>
+      <button class="btn" onclick="exportData()">导出 JSON</button>
+      <button class="btn" onclick="openImport()">导入备份</button>
+      <button class="btn" onclick="window.print()">打印 / PDF</button>
+      <button class="btn danger" onclick="resetAll()">恢复初始模板</button>
+    </div>
+  </header>
+
+  <div class="source-note">
+    <div>◎</div>
+    <div><strong>公开版不内置任何真实个人资料。</strong>请只填写你已确认的经历与证明材料；未发表成果应与“已发表论文”分开记录，避免报名口径失实。</div>
+  </div>
+
+  <section id="quick">
+    <div class="head">
+      <div><h3>快速格式</h3><p>同一信息在不同系统中经常要求不同格式，以下内容由基础字段自动生成。</p></div>
+      <div class="actions"><button class="btn small" onclick="copyQuick()">复制本区</button></div>
+    </div>
+    <div class="derived" id="derived"></div>
+  </section>
+
+  <section id="basic">
+    <div class="head">
+      <div><h3>02 · 基本信息</h3><p>对应真实系统中的姓名、证件、出生信息、户籍地址和联系方式。</p></div>
+      <div class="actions"><button class="btn small" onclick="copySection('basic')">复制本区</button></div>
+    </div>
+    <div class="grid three">
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>姓名</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('nameCn')">⧉</button></div></div>
+        <input data-key="nameCn" id="nameCn" type="text" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>姓名拼音（系统格式）</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('namePinyin')">⧉</button></div></div>
+        <input data-key="namePinyin" id="namePinyin" type="text" value="">
+        <div class="hint">东南大学页面要求按“姓在前、字母间不加字符”的格式填写。</div>
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>英文姓名（常规格式）</label><div class="fieldtools"><button class="icon" onclick="copyKey('nameEn')">⧉</button></div></div>
+        <input data-key="nameEn" id="nameEn" type="text" value="">
+      </div>
+
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>证件类型</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('idType')">⧉</button></div></div>
+        <input data-key="idType" id="idType" type="text" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>证件号码</label><div class="fieldtools"><span class="badge danger">敏感</span><button class="icon" onclick="copyKey('idNumber')">⧉</button></div></div>
+        <input data-key="idNumber" id="idNumber" type="text" placeholder="请自行补全；不从截图猜测">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>出生日期</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('birthdayCompact')">⧉</button></div></div>
+        <input data-key="birthdayCompact" id="birthdayCompact" type="text" value="">
+        <div class="hint">网页常用格式：YYYYMMDD。</div>
+      </div>
+
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>民族</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('ethnicity')">⧉</button></div></div>
+        <input data-key="ethnicity" id="ethnicity" type="text" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>性别</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('gender')">⧉</button></div></div>
+        <input data-key="gender" id="gender" type="text" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>政治面貌</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('politicalStatus')">⧉</button></div></div>
+        <input data-key="politicalStatus" id="politicalStatus" type="text" value="">
+      </div>
+
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>现役军人码</label><div class="fieldtools"><button class="icon" onclick="copyKey('militaryStatus')">⧉</button></div></div>
+        <input data-key="militaryStatus" id="militaryStatus" type="text" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>出生地（行政代码 + 地区）</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('birthplace')">⧉</button></div></div>
+        <input data-key="birthplace" id="birthplace" type="text" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>籍贯地（行政代码 + 地区）</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('nativePlace')">⧉</button></div></div>
+        <input data-key="nativePlace" id="nativePlace" type="text" value="">
+      </div>
+
+      <div class="field span2" data-search="">
+        <div class="fieldtop"><label>通讯地址</label><div class="fieldtools"><span class="badge danger">敏感</span><button class="icon" onclick="copyKey('mailingAddress')">⧉</button></div></div>
+        <input data-key="mailingAddress" id="mailingAddress" type="text" placeholder="请补全当前可收件的详细地址">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>通讯地址邮政编码</label><div class="fieldtools"><button class="icon" onclick="copyKey('postalCode')">⧉</button></div></div>
+        <input data-key="postalCode" id="postalCode" type="text" value="">
+      </div>
+
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>固定电话</label><div class="fieldtools"><button class="icon" onclick="copyKey('landline')">⧉</button></div></div>
+        <input data-key="landline" id="landline" type="text" placeholder="无可留空">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>移动电话</label><div class="fieldtools"><span class="badge danger">敏感</span><button class="icon" onclick="copyKey('phone')">⧉</button></div></div>
+        <input data-key="phone" id="phone" type="tel" placeholder="请补全">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>考生电子邮箱</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('email')">⧉</button></div></div>
+        <input data-key="email" id="email" type="email" placeholder="请补全常用邮箱">
+      </div>
+    </div>
+  </section>
+
+  <section id="family">
+    <div class="head">
+      <div><h3>03 · 家庭主要成员</h3><p>真实系统通常要求至少填写一行：姓名、关系、工作单位及职务、联系电话。</p></div>
+      <div class="actions"><button class="btn small" onclick="copyTable('familyTable','家庭主要成员')">复制表格</button></div>
+    </div>
+    <div class="tablewrap">
+      <table id="familyTable">
+        <thead><tr><th>姓名</th><th>关系</th><th>工作单位及职务</th><th>联系电话</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><input data-key="family1Name" value=""></td>
+            <td><input data-key="family1Relation" value=""></td>
+            <td><input data-key="family1Work" value=""></td>
+            <td><input data-key="family1Phone" placeholder="请核对后填写"></td>
+          </tr>
+          <tr>
+            <td><input data-key="family2Name" value=""></td>
+            <td><input data-key="family2Relation" value=""></td>
+            <td><input data-key="family2Work" value=""></td>
+            <td><input data-key="family2Phone" placeholder="请核对后填写"></td>
+          </tr>
+          <tr>
+            <td><input data-key="family3Name" placeholder="可选"></td>
+            <td><input data-key="family3Relation" placeholder="关系"></td>
+            <td><input data-key="family3Work" placeholder="工作单位及职务"></td>
+            <td><input data-key="family3Phone" placeholder="联系电话"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="study">
+    <div class="head">
+      <div><h3>04 · 学习信息</h3><p>院校、院系、专业、入学年月、毕业年月、成绩及排名必须拆开保存。</p></div>
+      <div class="actions"><button class="btn small" onclick="copySection('study')">复制本区</button></div>
+    </div>
+    <div class="grid three">
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>本科学校（代码 + 名称）</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('universityCodeName')">⧉</button></div></div>
+        <input data-key="universityCodeName" id="universityCodeName" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>本科院系</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('college')">⧉</button></div></div>
+        <input data-key="college" id="college" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>本科专业（代码 + 名称）</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('majorCodeName')">⧉</button></div></div>
+        <input data-key="majorCodeName" id="majorCodeName" value="">
+      </div>
+
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>入学年月</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('enrollmentMonth')">⧉</button></div></div>
+        <input data-key="enrollmentMonth" id="enrollmentMonth" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>预计毕业年月</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('graduationMonth')">⧉</button></div></div>
+        <input data-key="graduationMonth" id="graduationMonth" value="">
+        <div class="hint">已按 2023 级四年制本科修正为 2027 年 6 月。</div>
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>在校注册学号</label><div class="fieldtools"><span class="badge danger">敏感</span><button class="icon" onclick="copyKey('studentId')">⧉</button></div></div>
+        <input data-key="studentId" id="studentId" value="">
+      </div>
+
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>成绩类型</label><div class="fieldtools"><button class="icon" onclick="copyKey('scoreType')">⧉</button></div></div>
+        <input data-key="scoreType" id="scoreType" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>平均成绩</label><div class="fieldtools"><span class="badge warn">需更新</span><button class="icon" onclick="copyKey('averageScore')">⧉</button></div></div>
+        <input data-key="averageScore" id="averageScore" value="">
+        <div class="hint">请以最新盖章成绩单或排名证明为准。</div>
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>GPA / 满分</label><div class="fieldtools"><button class="icon" onclick="copyKey('gpa')">⧉</button></div></div>
+        <input data-key="gpa" id="gpa" placeholder="例如 4.xx/5.00">
+      </div>
+
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>排名类型</label><div class="fieldtools"><button class="icon" onclick="copyKey('rankType')">⧉</button></div></div>
+        <input data-key="rankType" id="rankType" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>排名</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('rankNumber')">⧉</button></div></div>
+        <input data-key="rankNumber" id="rankNumber" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>排名总人数</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('rankTotal')">⧉</button></div></div>
+        <input data-key="rankTotal" id="rankTotal" value="">
+      </div>
+
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>是否来自拔尖人才培养基地</label><div class="fieldtools"><button class="icon" onclick="copyKey('eliteBase')">⧉</button></div></div>
+        <input data-key="eliteBase" id="eliteBase" value="">
+      </div>
+      <div class="field span2" data-search="">
+        <div class="fieldtop"><label>拔尖人才培养基地名称</label><div class="fieldtools"><button class="icon" onclick="copyKey('eliteBaseName')">⧉</button></div></div>
+        <input data-key="eliteBaseName" id="eliteBaseName" placeholder="选择“否”时留空">
+      </div>
+    </div>
+  </section>
+
+  <section id="language">
+    <div class="head">
+      <div><h3>05 · 外语水平</h3><p>每一项外语成绩单独一行；系统填几项，通常就要上传几张对应证明。</p></div>
+      <div class="actions"><button class="btn small" onclick="copyTable('languageTable','外语水平')">复制表格</button></div>
+    </div>
+    <div class="tablewrap">
+      <table id="languageTable">
+        <thead><tr><th>外语水平</th><th>成绩</th><th>取得成绩时间</th><th>备注</th></tr></thead>
+        <tbody>
+          <tr><td><input data-key="lang1Type" value=""></td><td><input data-key="lang1Score" value=""></td><td><input data-key="lang1Date" value=""></td><td><input data-key="lang1Note"></td></tr>
+          <tr><td><input data-key="lang2Type" value=""></td><td><input data-key="lang2Score" value=""></td><td><input data-key="lang2Date" value=""></td><td><input data-key="lang2Note"></td></tr>
+          <tr><td><input data-key="lang3Type" placeholder="IELTS / TOEFL / 其他"></td><td><input data-key="lang3Score"></td><td><input data-key="lang3Date" placeholder="YYYY-MM"></td><td><input data-key="lang3Note"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="practice">
+    <div class="head">
+      <div><h3>06 · 实践经历</h3><p>完全按东南大学页面的三类字段：科研训练、实习实践、社会工作。</p></div>
+      <div class="actions"><button class="btn small" onclick="copySection('practice')">复制本区</button><button class="btn small" onclick="copySanitizedPractice()">复制去标点版</button></div>
+    </div>
+    <div class="grid">
+      <div class="field span2" data-search="">
+        <div class="fieldtop"><label>科研训练（起止时间、项目名称、项目级别、排名）</label><div class="fieldtools"><span class="badge">官网字段</span><button class="icon" onclick="copyKey('researchTraining')">⧉</button></div></div>
+        <textarea class="tall" data-key="researchTraining" id="researchTraining"></textarea>
+      </div>
+      <div class="field span2" data-search="">
+        <div class="fieldtop"><label>实习实践（起止时间、实习单位、主要工作内容）</label><div class="fieldtools"><span class="badge">官网字段</span><button class="icon" onclick="copyKey('internshipExperience')">⧉</button></div></div>
+        <textarea class="tall" data-key="internshipExperience" id="internshipExperience"></textarea>
+      </div>
+      <div class="field span2" data-search="">
+        <div class="fieldtop"><label>社会工作（起止时间、社会工作名称、主要工作内容）</label><div class="fieldtools"><span class="badge">官网字段</span><button class="icon" onclick="copyKey('socialExperience')">⧉</button></div></div>
+        <textarea data-key="socialExperience" id="socialExperience"></textarea>
+      </div>
+      <div class="field span2" data-search="">
+        <div class="fieldtop"><label>其他实习 / 已获 Offer（用于允许补充的系统）</label><div class="fieldtools"><span class="badge warn">不等同已入职</span><button class="icon" onclick="copyKey('otherInternship')">⧉</button></div></div>
+        <textarea data-key="otherInternship" id="otherInternship"></textarea>
+      </div>
+      <div class="copystrip span2">东南大学截图中的文本框提示“内容中不得含有 ,、#”。“复制去标点版”会自动去掉英文逗号、中文顿号和井号，并把中文逗号替换为分号。</div>
+    </div>
+  </section>
+
+  <section id="academic">
+    <div class="head">
+      <div><h3>07 · 学术成果</h3><p>严格区分“已发表”与“在投”。在投论文不能填入“已发表论文”栏目。</p></div>
+      <div class="actions"><button class="btn small" onclick="copySection('academic')">复制本区</button></div>
+    </div>
+    <div class="grid">
+      <div class="field span2" data-search="">
+        <div class="fieldtop"><label>已发表论文（作者、题目、刊物/会议、发表时间）</label><div class="fieldtools"><span class="badge">官网字段</span><button class="icon" onclick="copyKey('publishedPapers')">⧉</button></div></div>
+        <textarea data-key="publishedPapers" id="publishedPapers"></textarea>
+        <div class="hint">在投成果请单独记录，不要填入“已发表论文”。</div>
+      </div>
+      <div class="field span2" data-search="">
+        <div class="fieldtop"><label>已取得专利（专利权人、专利名称、授权或受理时间）</label><div class="fieldtools"><span class="badge">官网字段</span><button class="icon" onclick="copyKey('patents')">⧉</button></div></div>
+        <textarea data-key="patents" id="patents"></textarea>
+      </div>
+      <div class="field span2" data-search="">
+        <div class="fieldtop"><label>在投 / 其他学术成果（用于允许填写的系统）</label><div class="fieldtools"><span class="badge warn">非已发表</span><button class="icon" onclick="copyKey('submittedWork')">⧉</button></div></div>
+        <textarea class="tall" data-key="submittedWork" id="submittedWork"></textarea>
+      </div>
+    </div>
+
+    <div class="head" style="margin-top:20px">
+      <div><h3 style="font-size:15px">学科竞赛</h3><p>对应官网字段：获奖人、获奖项目名称、竞赛名称、获奖等级、获奖时间。</p></div>
+      <div class="actions"><button class="btn small" onclick="copyTable('competitionTable','学科竞赛')">复制表格</button></div>
+    </div>
+    <div class="tablewrap">
+      <table id="competitionTable">
+        <thead><tr><th>获奖人 / 排名</th><th>获奖项目名称</th><th>竞赛名称</th><th>获奖等级</th><th>获奖时间</th></tr></thead>
+        <tbody>
+          <tr><td><input data-key="comp1Person" value=""></td><td><input data-key="comp1Project" value=""></td><td><input data-key="comp1Name" value=""></td><td><input data-key="comp1Level" value=""></td><td><input data-key="comp1Date" value=""></td></tr>
+          <tr><td><input data-key="comp2Person" value=""></td><td><input data-key="comp2Project" value=""></td><td><input data-key="comp2Name" value=""></td><td><input data-key="comp2Level" value=""></td><td><input data-key="comp2Date" value=""></td></tr>
+          <tr><td><input data-key="comp3Person" value=""></td><td><input data-key="comp3Project" value=""></td><td><input data-key="comp3Name" value=""></td><td><input data-key="comp3Level" value=""></td><td><input data-key="comp3Date" value=""></td></tr>
+          <tr><td><input data-key="comp4Person" value=""></td><td><input data-key="comp4Project" value=""></td><td><input data-key="comp4Name" value=""></td><td><input data-key="comp4Level" value=""></td><td><input data-key="comp4Date" value=""></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="awards">
+    <div class="head">
+      <div><h3>08 · 奖励情况</h3><p>只填本科期间校级以上（含）荣誉奖励，不与学科竞赛混填。</p></div>
+      <div class="actions"><button class="btn small" onclick="copyTable('awardTable','荣誉奖励')">复制表格</button></div>
+    </div>
+    <div class="tablewrap">
+      <table id="awardTable">
+        <thead><tr><th>获奖名称</th><th>获奖等级</th><th>获奖时间</th><th>备注</th></tr></thead>
+        <tbody>
+          <tr><td><input data-key="award1Name" value=""></td><td><input data-key="award1Level" value=""></td><td><input data-key="award1Date" value=""></td><td><input data-key="award1Note"></td></tr>
+          <tr><td><input data-key="award2Name" placeholder="请按证书补充"></td><td><input data-key="award2Level" placeholder="校级/省级/国家级"></td><td><input data-key="award2Date" placeholder="YYYY年"></td><td><input data-key="award2Note"></td></tr>
+          <tr><td><input data-key="award3Name" placeholder="可选"></td><td><input data-key="award3Level"></td><td><input data-key="award3Date"></td><td><input data-key="award3Note"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="application">
+    <div class="head">
+      <div><h3>09 · 申请信息</h3><p>各校字段名称略有差异，但志愿、培养类型、导师、专项计划和报考类别高度重复。</p></div>
+      <div class="actions"><button class="btn small" onclick="copySection('application')">复制本区</button></div>
+    </div>
+    <div class="grid three">
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>招生类型</label><div class="fieldtools"><span class="badge">常见必填</span><button class="icon" onclick="copyKey('admissionType')">⧉</button></div></div>
+        <input data-key="admissionType" id="admissionType" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>学位类型</label><div class="fieldtools"><button class="icon" onclick="copyKey('degreeType')">⧉</button></div></div>
+        <input data-key="degreeType" id="degreeType" placeholder="学术学位 / 专业学位">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>学习方式</label><div class="fieldtools"><button class="icon" onclick="copyKey('studyMode')">⧉</button></div></div>
+        <input data-key="studyMode" id="studyMode" value="">
+      </div>
+
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>申请学院</label><div class="fieldtools"><button class="icon" onclick="copyKey('targetCollege')">⧉</button></div></div>
+        <input data-key="targetCollege" id="targetCollege" placeholder="每所学校单独修改">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>申请专业</label><div class="fieldtools"><button class="icon" onclick="copyKey('targetMajor')">⧉</button></div></div>
+        <input data-key="targetMajor" id="targetMajor" placeholder="专业代码 + 名称">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>申请研究方向</label><div class="fieldtools"><button class="icon" onclick="copyKey('targetDirection')">⧉</button></div></div>
+        <input data-key="targetDirection" id="targetDirection" value="">
+      </div>
+
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>意向导师</label><div class="fieldtools"><button class="icon" onclick="copyKey('targetSupervisor')">⧉</button></div></div>
+        <input data-key="targetSupervisor" id="targetSupervisor" placeholder="暂不区分导师 / 具体导师姓名">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>是否服从调剂</label><div class="fieldtools"><button class="icon" onclick="copyKey('adjustment')">⧉</button></div></div>
+        <input data-key="adjustment" id="adjustment" placeholder="是 / 否">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>报考类别</label><div class="fieldtools"><button class="icon" onclick="copyKey('employmentCategory')">⧉</button></div></div>
+        <input data-key="employmentCategory" id="employmentCategory" value="">
+      </div>
+
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>专项计划</label><div class="fieldtools"><button class="icon" onclick="copyKey('specialPlan')">⧉</button></div></div>
+        <input data-key="specialPlan" id="specialPlan" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>本校专项计划</label><div class="fieldtools"><button class="icon" onclick="copyKey('schoolSpecialPlan')">⧉</button></div></div>
+        <input data-key="schoolSpecialPlan" id="schoolSpecialPlan" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>导师联系状态（自用）</label><div class="fieldtools"><button class="icon" onclick="copyKey('contactStatus')">⧉</button></div></div>
+        <input data-key="contactStatus" id="contactStatus" placeholder="未联系 / 已联系 / 已回复 / 已面试">
+      </div>
+
+      <div class="field span3" data-search="">
+        <div class="fieldtop"><label>个人陈述 / 补充信息底稿</label><div class="fieldtools"><button class="icon" onclick="copyKey('personalStatement')">⧉</button></div></div>
+        <textarea class="tall" data-key="personalStatement" id="personalStatement"></textarea>
+      </div>
+    </div>
+  </section>
+
+  <section id="referee">
+    <div class="head">
+      <div><h3>10 · 推荐人信息</h3><p>硕士推免通常不强制；申请直博时，多数学校要求两位副教授及以上专家。</p></div>
+      <div class="actions"><button class="btn small" onclick="copyTable('refereeTable','推荐人信息')">复制表格</button></div>
+    </div>
+    <div class="tablewrap">
+      <table id="refereeTable">
+        <thead><tr><th>姓名</th><th>职称</th><th>单位 / 院系</th><th>与申请人关系</th><th>邮箱</th><th>电话</th></tr></thead>
+        <tbody>
+          <tr><td><input data-key="ref1Name" value=""></td><td><input data-key="ref1Title" value=""></td><td><input data-key="ref1Org" value=""></td><td><input data-key="ref1Relation" value=""></td><td><input data-key="ref1Email" value=""></td><td><input data-key="ref1Phone" placeholder="按需填写"></td></tr>
+          <tr><td><input data-key="ref2Name" placeholder="直博时补充"></td><td><input data-key="ref2Title"></td><td><input data-key="ref2Org"></td><td><input data-key="ref2Relation"></td><td><input data-key="ref2Email"></td><td><input data-key="ref2Phone"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="photo">
+    <div class="head">
+      <div><h3>11 · 上传照片</h3><p>各校尺寸不同，建议同时准备原始证件照和多个压缩版本。</p></div>
+      <div class="actions"><button class="btn small" onclick="copySection('photo')">复制本区</button></div>
+    </div>
+    <div class="grid three">
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>背景色</label><div class="fieldtools"><button class="icon" onclick="copyKey('photoBackground')">⧉</button></div></div>
+        <input data-key="photoBackground" id="photoBackground" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>常备像素版本</label><div class="fieldtools"><button class="icon" onclick="copyKey('photoPixels')">⧉</button></div></div>
+        <input data-key="photoPixels" id="photoPixels" value="">
+      </div>
+      <div class="field" data-search="">
+        <div class="fieldtop"><label>常备文件大小</label><div class="fieldtools"><button class="icon" onclick="copyKey('photoSizes')">⧉</button></div></div>
+        <input data-key="photoSizes" id="photoSizes" value="">
+      </div>
+    </div>
+  </section>
+
+  <section id="materials">
+    <div class="head">
+      <div><h3>12 · 上传材料</h3><p>依据真实官方通知整理；每所学校提交前再核对格式、页数和单文件大小。</p></div>
+      <div class="actions"><button class="btn small" onclick="copyFilenames()">复制文件名清单</button></div>
+    </div>
+    <div class="checks" id="materialChecks">
+      <label class="check"><input type="checkbox" data-check="applicationForm"><span>系统生成的推免申请表（签字、盖章）</span></label>
+      <label class="check"><input type="checkbox" data-check="idCard"><span>有效身份证明（身份证正反面）</span></label>
+      <label class="check"><input type="checkbox" data-check="studentProof"><span>教育部学籍信息在线验证报告 / 在学证明</span></label>
+      <label class="check"><input type="checkbox" data-check="transcript"><span>本科阶段成绩单（教务部门或学院盖章）</span></label>
+      <label class="check"><input type="checkbox" data-check="rankProof"><span>成绩 / 绩点 / 综合排名证明</span></label>
+      <label class="check"><input type="checkbox" data-check="languageProof"><span>CET-4、CET-6 等外语成绩证明</span></label>
+      <label class="check"><input type="checkbox" data-check="academicProof"><span>论文投稿证明、学术成果与竞赛证明</span></label>
+      <label class="check"><input type="checkbox" data-check="awardProof"><span>校级以上荣誉奖励证明</span></label>
+      <label class="check"><input type="checkbox" data-check="practiceProof"><span>科研训练、实习实践、社会工作证明</span></label>
+      <label class="check"><input type="checkbox" data-check="resume"><span>一页 A4 个人简历（部分学院强制）</span></label>
+      <label class="check"><input type="checkbox" data-check="photo"><span>符合系统要求的证件照</span></label>
+      <label class="check"><input type="checkbox" data-check="recommendation"><span>专家推荐信（通常仅直博必需）</span></label>
+      <label class="check"><input type="checkbox" data-check="advisorConsent"><span>拟报考导师同意证明（部分直博项目要求）</span></label>
+      <label class="check"><input type="checkbox" data-check="other"><span>学院要求的个人陈述、研究计划或补充材料</span></label>
+    </div>
+
+    <div class="head" style="margin-top:20px">
+      <div><h3 style="font-size:15px">建议统一文件名</h3><p>名称随中文姓名自动更新。</p></div>
+    </div>
+    <div class="filename-list" id="filenameList"></div>
+  </section>
+
+  <section id="submit">
+    <div class="head">
+      <div><h3>13 · 提交前检查</h3><p>真实系统通常提交后无法自行修改，必须在最后一步逐项核对。</p></div>
+      <div class="actions"><button class="btn small" onclick="clearSubmitChecks()">清空勾选</button></div>
+    </div>
+    <div class="warning"><strong>重点检查：</strong>提交前请逐项核对日期、排名口径、成果状态和证明材料，确保与目标院校官网要求一致。</div>
+    <div class="checks" id="submitChecks" style="margin-top:12px">
+      <label class="check"><input type="checkbox" data-submit-check="identity"><span>姓名、拼音、身份证号与证件完全一致</span></label>
+      <label class="check"><input type="checkbox" data-submit-check="contact"><span>手机号和邮箱为近期常用联系方式</span></label>
+      <label class="check"><input type="checkbox" data-submit-check="education"><span>学校、院系、专业代码和毕业年月无误</span></label>
+      <label class="check"><input type="checkbox" data-submit-check="rank"><span>成绩、排名和总人数与盖章证明一致</span></label>
+      <label class="check"><input type="checkbox" data-submit-check="language"><span>外语成绩与上传证书逐项对应</span></label>
+      <label class="check"><input type="checkbox" data-submit-check="publication"><span>已发表、在投、竞赛和荣誉没有混填</span></label>
+      <label class="check"><input type="checkbox" data-submit-check="choice"><span>学院、专业、研究方向、导师和学位类型确认无误</span></label>
+      <label class="check"><input type="checkbox" data-submit-check="files"><span>所有 PDF 可正常打开，页码方向正确，文件未超限</span></label>
+    </div>
+  </section>
+</main>
+</div>
+
+<dialog id="jsonDialog">
+  <div class="modalhead"><strong id="dialogTitle">导入备份</strong><button class="btn small" onclick="jsonDialog.close()">关闭</button></div>
+  <div class="modalbody"><textarea id="jsonArea" spellcheck="false"></textarea><div class="hint" id="dialogHint"></div></div>
+  <div class="modalfoot"><button class="btn primary" id="applyImportBtn" onclick="applyImport()">应用导入</button></div>
+</dialog>
+<input id="fileInput" type="file" accept=".json,application/json" hidden>
+<div class="toast" id="toast"></div>
+
+<script>
+const PROFILE_KEY='tuimian-real-form-profile-v2';
+const CHECK_KEY='tuimian-real-form-check-v2';
+const SUBMIT_KEY='tuimian-real-form-submit-v2';
+const fields=()=>[...document.querySelectorAll('[data-key]')];
+
+function data(){return Object.fromEntries(fields().map(e=>[e.dataset.key,e.value.trim()]))}
+function setData(obj){
+  fields().forEach(e=>{if(Object.prototype.hasOwnProperty.call(obj,e.dataset.key))e.value=obj[e.dataset.key]??''})
+}
+function save(show=false){
+  localStorage.setItem(PROFILE_KEY,JSON.stringify(data()));
+  localStorage.setItem(CHECK_KEY,JSON.stringify(checkData('[data-check]')));
+  localStorage.setItem(SUBMIT_KEY,JSON.stringify(checkData('[data-submit-check]')));
+  render();
+  if(show)toast('已保存在当前浏览器');
+}
+function load(){
+  try{
+    const p=JSON.parse(localStorage.getItem(PROFILE_KEY)||'{}');setData(p);
+    loadChecks('[data-check]',JSON.parse(localStorage.getItem(CHECK_KEY)||'{}'));
+    loadChecks('[data-submit-check]',JSON.parse(localStorage.getItem(SUBMIT_KEY)||'{}'));
+  }catch(e){console.warn(e)}
+  render();
+}
+function checkData(sel){
+  return Object.fromEntries([...document.querySelectorAll(sel)].map(e=>[e.dataset.check||e.dataset.submitCheck,e.checked]))
+}
+function loadChecks(sel,obj){
+  document.querySelectorAll(sel).forEach(e=>e.checked=!!obj[e.dataset.check||e.dataset.submitCheck]);updateCheckStyles()
+}
+function updateCheckStyles(){
+  document.querySelectorAll('.check').forEach(x=>x.classList.toggle('done',x.querySelector('input')?.checked))
+}
+async function copyText(text){
+  if(!text){toast('该项还没有内容');return}
+  try{await navigator.clipboard.writeText(text)}
+  catch{
+    const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove()
+  }
+  toast('已复制')
+}
+function copyKey(key){copyText(data()[key]||'')}
+function labelFor(e){
+  return e.closest('.field')?.querySelector('label')?.innerText||e.dataset.key
+}
+function copySection(id){
+  const s=document.getElementById(id);
+  const lines=[...s.querySelectorAll('[data-key]')].filter(e=>e.value.trim()).map(e=>`${labelFor(e)}：${e.value.trim()}`);
+  copyText(lines.join('\n\n'))
+}
+function copyTable(id,title){
+  const table=document.getElementById(id),headers=[...table.querySelectorAll('thead th')].map(x=>x.innerText.trim());
+  const rows=[...table.querySelectorAll('tbody tr')].map(tr=>{
+    const vals=[...tr.querySelectorAll('input,textarea,select')].map(x=>x.value.trim());
+    if(!vals.some(Boolean))return '';
+    return headers.map((h,i)=>`${h}：${vals[i]||''}`).join('；')
+  }).filter(Boolean);
+  copyText(`【${title}】\n${rows.join('\n')}`)
+}
+function formatBirthday(compact,style){
+  const m=(compact||'').match(/^(\d{4})(\d{2})(\d{2})$/);if(!m)return compact||'待填写';
+  return style==='dash'?`${m[1]}-${m[2]}-${m[3]}`:`${m[1]}年${Number(m[2])}月${Number(m[3])}日`
+}
+function rankPercent(){
+  const d=data(),r=Number(d.rankNumber),t=Number(d.rankTotal);
+  return r&&t?`${(r/t*100).toFixed(1)}%`:'待填写'
+}
+function rankStandard(){
+  const d=data(),r=Number(d.rankNumber),t=Number(d.rankTotal);
+  if(!r||!t||r<1||t<1||r>t)return '待填写';
+  return `${d.rankNumber}/${d.rankTotal}（前${Math.ceil(r/t*100)}%）`
+}
+const quickDefs=[
+  ['姓名拼音（无空格）',d=>d.namePinyin],
+  ['中文姓名',d=>d.nameCn],
+  ['出生日期 YYYYMMDD',d=>d.birthdayCompact],
+  ['出生日期 YYYY-MM-DD',d=>formatBirthday(d.birthdayCompact,'dash')],
+  ['出生日期中文',d=>formatBirthday(d.birthdayCompact,'cn')],
+  ['排名（拆分）',d=>`${d.rankNumber||'待填'} / ${d.rankTotal||'待填'}`],
+  ['排名（标准口径）',()=>rankStandard()],
+  ['精确排名百分比',d=>rankPercent()],
+  ['本科院校',d=>d.universityCodeName],
+  ['本科专业',d=>d.majorCodeName],
+  ['入学年月',d=>d.enrollmentMonth],
+  ['预计毕业年月',d=>d.graduationMonth]
+];
+function renderDerived(){
+  const d=data(),box=document.getElementById('derived');
+  box.innerHTML=quickDefs.map(([k,fn])=>{
+    const v=fn(d)||'待填写';
+    return `<div class="card" data-search=""><div class="k">${esc(k)}</div><div class="v">${esc(v)}</div><div class="ops"><button class="btn small" data-copy="${escAttr(v)}">复制</button></div></div>`
+  }).join('');
+  box.querySelectorAll('[data-copy]').forEach(b=>b.onclick=()=>copyText(b.dataset.copy))
+}
+function renderFilenames(){
+  const n=data().nameCn||'姓名';
+  const files=[
+    `${n}_推免申请表.pdf`,`${n}_身份证.pdf`,`${n}_学籍在线验证报告.pdf`,
+    `${n}_本科成绩单.pdf`,`${n}_成绩排名证明.pdf`,`${n}_外语成绩证明.pdf`,
+    `${n}_学术成果及竞赛证明.pdf`,`${n}_荣誉奖励证明.pdf`,
+    `${n}_实践经历证明.pdf`,`${n}_个人简历.pdf`
+  ];
+  const box=document.getElementById('filenameList');
+  box.innerHTML=files.map(f=>`<div class="filename"><span>${esc(f)}</span><button class="btn small" data-file="${escAttr(f)}">复制</button></div>`).join('');
+  box.querySelectorAll('[data-file]').forEach(b=>b.onclick=()=>copyText(b.dataset.file))
+}
+function copyFilenames(){
+  copyText([...document.querySelectorAll('#filenameList .filename span')].map(x=>x.innerText).join('\n'))
+}
+function updateProgress(){
+  const important=new Set(['nameCn','namePinyin','idNumber','birthdayCompact','ethnicity','gender','politicalStatus',
+  'birthplace','nativePlace','mailingAddress','postalCode','phone','email','universityCodeName','college','majorCodeName',
+  'enrollmentMonth','graduationMonth','studentId','averageScore','rankNumber','rankTotal']);
+  let total=0,filled=0;
+  fields().forEach(e=>{const w=important.has(e.dataset.key)?2:1;total+=w;if(e.value.trim())filled+=w});
+  const pct=Math.round(filled/total*100);document.getElementById('progressBar').style.width=pct+'%';
+  document.getElementById('progressText').innerText=pct+'%'
+}
+function render(){renderDerived();renderFilenames();updateProgress();updateCheckStyles()}
+function copyQuick(){
+  const lines=[...document.querySelectorAll('#derived .card')].map(c=>`${c.querySelector('.k').innerText}：${c.querySelector('.v').innerText}`);
+  copyText(lines.join('\n'))
+}
+function copyCore(){
+  const d=data();
+  copyText([
+    `姓名：${d.nameCn||''}`,`姓名拼音：${d.namePinyin||''}`,`英文姓名：${d.nameEn||''}`,
+    `出生日期：${d.birthdayCompact||''}`,`民族：${d.ethnicity||''}`,`性别：${d.gender||''}`,
+    `政治面貌：${d.politicalStatus||''}`,`本科学校：${d.universityCodeName||''}`,
+    `本科院系：${d.college||''}`,`本科专业：${d.majorCodeName||''}`,
+    `入学年月：${d.enrollmentMonth||''}`,`预计毕业年月：${d.graduationMonth||''}`,
+    `平均成绩：${d.averageScore||''}`,`排名：${d.rankNumber||''}/${d.rankTotal||''}`,
+    d.phone?`移动电话：${d.phone}`:'',d.email?`电子邮箱：${d.email}`:''
+  ].filter(Boolean).join('\n'))
+}
+function copyAll(){
+  const chunks=[...document.querySelectorAll('main section')].map(s=>{
+    const lines=[...s.querySelectorAll('[data-key]')].filter(e=>e.value.trim()).map(e=>`${e.dataset.key}：${e.value.trim()}`);
+    return lines.length?`【${s.querySelector('h3')?.innerText||s.id}】\n${lines.join('\n')}`:''
+  }).filter(Boolean);copyText(chunks.join('\n\n'))
+}
+function sanitize(s){return s.replace(/[,，、#]/g,m=>m==='，'?';':'').replace(/\s*;\s*/g,'；').replace(/；+/g,'；')}
+function copySanitizedPractice(){
+  const d=data();copyText([
+    `科研训练：${sanitize(d.researchTraining||'')}`,
+    `实习实践：${sanitize(d.internshipExperience||'')}`,
+    `社会工作：${sanitize(d.socialExperience||'')}`
+  ].join('\n\n'))
+}
+function exportObject(){return{version:2,exportedAt:new Date().toISOString(),profile:data(),materials:checkData('[data-check]'),submit:checkData('[data-submit-check]')}}
+function exportData(){
+  const blob=new Blob([JSON.stringify(exportObject(),null,2)],{type:'application/json'});
+  const a=document.createElement('a'),url=URL.createObjectURL(blob);a.href=url;
+  a.download=`推免报名信息-${data().nameCn||'姓名'}-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(url)
+}
+function openImport(){
+  document.getElementById('jsonArea').value='';document.getElementById('dialogTitle').innerText='导入 JSON 备份';
+  document.getElementById('dialogHint').innerHTML='粘贴 JSON 后应用，或 <button class="btn small" onclick="fileInput.click()">选择 JSON 文件</button>';
+  jsonDialog.showModal()
+}
+function applyObject(obj){
+  setData(obj.profile||obj);
+  if(obj.materials)loadChecks('[data-check]',obj.materials);
+  if(obj.submit)loadChecks('[data-submit-check]',obj.submit);
+  save();toast('备份已导入')
+}
+function applyImport(){
+  try{applyObject(JSON.parse(document.getElementById('jsonArea').value));jsonDialog.close()}
+  catch{toast('JSON 格式不正确')}
+}
+function resetAll(){
+  if(!confirm('确定恢复本版初始模板吗？浏览器中已填写的内容会被清除。'))return;
+  localStorage.removeItem(PROFILE_KEY);localStorage.removeItem(CHECK_KEY);localStorage.removeItem(SUBMIT_KEY);location.reload()
+}
+function clearSubmitChecks(){
+  document.querySelectorAll('[data-submit-check]').forEach(e=>e.checked=false);save();toast('提交检查已清空')
+}
+function toast(msg){
+  const t=document.getElementById('toast');t.innerText=msg;t.classList.add('show');
+  clearTimeout(window.__tt);window.__tt=setTimeout(()=>t.classList.remove('show'),1500)
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function escAttr(s){return esc(s).replace(/\n/g,'&#10;')}
+
+function initTableCopyButtons(){
+  document.querySelectorAll('.tablewrap td > [data-key]').forEach(input=>{
+    if(input.parentElement.classList.contains('table-input-wrap'))return;
+    const cell=input.closest('td'),row=cell.closest('tr'),table=cell.closest('table');
+    const column=[...row.children].indexOf(cell);
+    const heading=table.querySelectorAll('thead th')[column]?.innerText.trim()||'该字段';
+    const wrap=document.createElement('div'),button=document.createElement('button');
+    wrap.className='table-input-wrap';
+    button.type='button';
+    button.className='icon table-copy';
+    button.innerText='⧉';
+    button.title=`复制${heading}`;
+    button.setAttribute('aria-label',`复制${heading}`);
+    button.addEventListener('click',()=>copyKey(input.dataset.key));
+    input.before(wrap);wrap.append(input,button)
+  })
+}
+
+initTableCopyButtons();
+fields().forEach(e=>e.addEventListener('input',()=>save(false)));
+document.querySelectorAll('[data-check],[data-submit-check]').forEach(e=>e.addEventListener('change',()=>save(false)));
+document.getElementById('fileInput').addEventListener('change',async e=>{
+  const f=e.target.files[0];if(!f)return;
+  try{applyObject(JSON.parse(await f.text()));jsonDialog.close()}catch{toast('无法读取该文件')}
+  e.target.value=''
+});
+document.getElementById('search').addEventListener('input',e=>{
+  const q=e.target.value.trim().toLowerCase();let count=0;
+  document.querySelectorAll('.field,.card').forEach(x=>{
+    const text=((x.dataset.search||'')+' '+x.innerText+' '+[...x.querySelectorAll('input,textarea')].map(a=>a.value).join(' ')).toLowerCase();
+    const ok=!q||text.includes(q);x.classList.toggle('hidden',!ok);if(ok)count++
+  });
+  document.querySelectorAll('main section').forEach(s=>{
+    const items=[...s.querySelectorAll('.field,.card')];if(!items.length)return;
+    s.style.display=!q||items.some(x=>!x.classList.contains('hidden'))?'':'none'
+  })
+});
+const obs=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting)document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id))
+}),{rootMargin:'-20% 0px -70% 0px'});
+document.querySelectorAll('main section').forEach(s=>obs.observe(s));
+load();
+</script>
+</body>
+</html>

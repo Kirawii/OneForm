@@ -1,0 +1,6 @@
+_private/
+*.local.json
+*.tuimian
+.DS_Store
+Thumbs.db
+

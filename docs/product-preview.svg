@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
+  <title id="title">OneForm 界面预览</title>
+  <desc id="desc">左侧为十三步资料目录，右侧包含搜索、核心操作、快速格式和基本信息字段。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#eef3fb"/>
+      <stop offset=".48" stop-color="#f5f5f2"/>
+      <stop offset="1" stop-color="#eef7f1"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="14" stdDeviation="20" flood-color="#1a1f27" flood-opacity=".10"/>
+    </filter>
+    <style>
+      .ui{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+      .muted{fill:#74766f}.text{fill:#20211f}.blue{fill:#2366d1}.line{stroke:#dedfd9}
+      .label{font-size:13px;font-weight:650}.small{font-size:11px}.tiny{font-size:9px}
+    </style>
+  </defs>
+  <rect width="1440" height="900" rx="28" fill="url(#bg)"/>
+  <g class="ui" filter="url(#shadow)">
+    <rect x="38" y="36" width="1364" height="828" rx="22" fill="#f5f5f2" stroke="#dedfd9"/>
+    <rect x="58" y="56" width="244" height="788" rx="17" fill="#fff" stroke="#dedfd9"/>
+    <text x="82" y="92" class="text" font-size="19" font-weight="750">OneForm</text>
+    <text x="82" y="116" class="muted small">字段填一次，之后逐项复制。</text>
+    <line x1="82" y1="136" x2="278" y2="136" class="line"/>
+    <text x="82" y="164" class="muted small">资料完整度</text>
+    <text x="257" y="164" class="text small" font-weight="700">68%</text>
+    <rect x="82" y="176" width="196" height="7" rx="4" fill="#f1f2ef"/>
+    <rect x="82" y="176" width="133" height="7" rx="4" fill="#2366d1"/>
+    <g class="label">
+      <rect x="74" y="202" width="212" height="42" rx="10" fill="#fafaf8"/>
+      <rect x="84" y="210" width="25" height="25" rx="8" fill="#fff" stroke="#dedfd9"/>
+      <text x="91" y="227" class="muted tiny">00</text><text x="121" y="228" class="text">快速格式</text>
+      <rect x="84" y="254" width="25" height="25" rx="8" fill="#fff" stroke="#dedfd9"/>
+      <text x="91" y="271" class="muted tiny">02</text><text x="121" y="272" class="muted">基本信息</text>
+      <rect x="84" y="298" width="25" height="25" rx="8" fill="#fff" stroke="#dedfd9"/>
+      <text x="91" y="315" class="muted tiny">03</text><text x="121" y="316" class="muted">家庭主要成员</text>
+      <rect x="84" y="342" width="25" height="25" rx="8" fill="#fff" stroke="#dedfd9"/>
+      <text x="91" y="359" class="muted tiny">04</text><text x="121" y="360" class="muted">学习信息</text>
+      <rect x="84" y="386" width="25" height="25" rx="8" fill="#fff" stroke="#dedfd9"/>
+      <text x="91" y="403" class="muted tiny">05</text><text x="121" y="404" class="muted">外语水平</text>
+      <rect x="84" y="430" width="25" height="25" rx="8" fill="#fff" stroke="#dedfd9"/>
+      <text x="91" y="447" class="muted tiny">06</text><text x="121" y="448" class="muted">实践经历</text>
+      <rect x="84" y="474" width="25" height="25" rx="8" fill="#fff" stroke="#dedfd9"/>
+      <text x="91" y="491" class="muted tiny">07</text><text x="121" y="492" class="muted">学术成果</text>
+      <rect x="84" y="518" width="25" height="25" rx="8" fill="#fff" stroke="#dedfd9"/>
+      <text x="91" y="535" class="muted tiny">08</text><text x="121" y="536" class="muted">奖励情况</text>
+      <rect x="84" y="562" width="25" height="25" rx="8" fill="#fff" stroke="#dedfd9"/>
+      <text x="91" y="579" class="muted tiny">09</text><text x="121" y="580" class="muted">申请信息</text>
+      <rect x="84" y="606" width="25" height="25" rx="8" fill="#fff" stroke="#dedfd9"/>
+      <text x="91" y="623" class="muted tiny">12</text><text x="121" y="624" class="muted">上传材料</text>
+      <rect x="84" y="650" width="25" height="25" rx="8" fill="#fff" stroke="#dedfd9"/>
+      <text x="91" y="667" class="muted tiny">13</text><text x="121" y="668" class="muted">提交前检查</text>
+    </g>
+    <rect x="82" y="782" width="196" height="38" rx="9" fill="#fff" stroke="#dedfd9"/>
+    <text x="132" y="806" class="text small" font-weight="650">导出 JSON 备份</text>
+
+    <rect x="322" y="56" width="1060" height="62" rx="15" fill="#fff" stroke="#dedfd9"/>
+    <rect x="338" y="68" width="677" height="38" rx="10" fill="#fff" stroke="#dedfd9"/>
+    <circle cx="359" cy="87" r="6" fill="none" stroke="#74766f" stroke-width="1.5"/>
+    <line x1="363" y1="92" x2="368" y2="97" stroke="#74766f" stroke-width="1.5"/>
+    <text x="380" y="92" class="muted small">搜索字段：例如出生地、排名、CET-6、竞赛、导师</text>
+    <rect x="1028" y="68" width="191" height="38" rx="10" fill="#fff" stroke="#dedfd9"/>
+    <text x="1063" y="92" class="text small" font-weight="650">复制全部已填字段</text>
+    <rect x="1231" y="68" width="135" height="38" rx="10" fill="#2366d1"/>
+    <text x="1286" y="92" fill="#fff" class="small" font-weight="700">保存</text>
+
+    <rect x="322" y="136" width="1060" height="224" rx="17" fill="#fff" stroke="#dedfd9"/>
+    <text x="350" y="171" class="blue tiny" font-weight="750" letter-spacing="1.6">OFFICIAL-FORM ALIGNED / LOCAL-FIRST</text>
+    <text x="350" y="224" class="text" font-size="38" font-weight="780" letter-spacing="-1.8">不是简历展示页，</text>
+    <text x="350" y="267" class="text" font-size="38" font-weight="780" letter-spacing="-1.8">而是一份可复制的报名底稿。</text>
+    <text x="350" y="296" class="muted small">按真实报名系统的字段结构整理；集中填写一次，之后在不同院校系统中逐项复制。</text>
+    <rect x="350" y="316" width="148" height="31" rx="8" fill="#2366d1"/>
+    <text x="374" y="336" fill="#fff" class="small" font-weight="700">复制核心报名信息</text>
+    <rect x="508" y="316" width="92" height="31" rx="8" fill="#fff" stroke="#dedfd9"/>
+    <text x="531" y="336" class="text small">导出 JSON</text>
+    <rect x="610" y="316" width="84" height="31" rx="8" fill="#fff" stroke="#dedfd9"/>
+    <text x="632" y="336" class="text small">打印 PDF</text>
+
+    <rect x="322" y="378" width="1060" height="186" rx="17" fill="#fff" stroke="#dedfd9"/>
+    <text x="350" y="417" class="text" font-size="19" font-weight="730">快速格式</text>
+    <text x="350" y="439" class="muted small">由基础字段自动生成常见格式，点击即可复制。</text>
+    <g>
+      <rect x="350" y="462" width="240" height="78" rx="12" fill="#fff" stroke="#dedfd9"/>
+      <text x="366" y="484" class="muted tiny">姓名拼音（无空格）</text>
+      <text x="366" y="511" class="text label">ZhangSan</text>
+      <rect x="540" y="495" width="34" height="28" rx="8" fill="#fafaf8" stroke="#dedfd9"/>
+      <text x="551" y="513" class="blue small">复制</text>
+      <rect x="602" y="462" width="240" height="78" rx="12" fill="#fff" stroke="#dedfd9"/>
+      <text x="618" y="484" class="muted tiny">中文姓名</text>
+      <text x="618" y="511" class="text label">张三</text>
+      <rect x="792" y="495" width="34" height="28" rx="8" fill="#fafaf8" stroke="#dedfd9"/>
+      <text x="803" y="513" class="blue small">复制</text>
+      <rect x="854" y="462" width="240" height="78" rx="12" fill="#fff" stroke="#dedfd9"/>
+      <text x="870" y="484" class="muted tiny">排名（标准口径）</text>
+      <text x="870" y="511" class="text label">12/124（前10%）</text>
+      <rect x="1044" y="495" width="34" height="28" rx="8" fill="#fafaf8" stroke="#dedfd9"/>
+      <text x="1055" y="513" class="blue small">复制</text>
+      <rect x="1106" y="462" width="240" height="78" rx="12" fill="#fff" stroke="#dedfd9"/>
+      <text x="1122" y="484" class="muted tiny">出生日期 YYYY-MM-DD</text>
+      <text x="1122" y="511" class="text label">2004-01-01</text>
+      <rect x="1296" y="495" width="34" height="28" rx="8" fill="#fafaf8" stroke="#dedfd9"/>
+      <text x="1307" y="513" class="blue small">复制</text>
+    </g>
+
+    <rect x="322" y="582" width="1060" height="242" rx="17" fill="#fff" stroke="#dedfd9"/>
+    <text x="350" y="621" class="text" font-size="19" font-weight="730">02 · 基本信息</text>
+    <text x="350" y="643" class="muted small">姓名、证件、出生信息、户籍地址和联系方式。</text>
+    <g>
+      <rect x="350" y="670" width="316" height="124" rx="12" fill="#fff" stroke="#dedfd9"/>
+      <text x="366" y="696" class="text small" font-weight="680">姓名</text>
+      <rect x="620" y="682" width="28" height="28" rx="8" fill="#fff" stroke="#dedfd9"/>
+      <text x="628" y="701" class="blue label">⧉</text>
+      <rect x="366" y="716" width="282" height="52" rx="9" fill="#fafaf8"/>
+      <text x="382" y="748" class="muted small">请输入中文姓名</text>
+      <rect x="682" y="670" width="316" height="124" rx="12" fill="#fff" stroke="#dedfd9"/>
+      <text x="698" y="696" class="text small" font-weight="680">姓名拼音（系统格式）</text>
+      <rect x="952" y="682" width="28" height="28" rx="8" fill="#fff" stroke="#dedfd9"/>
+      <text x="960" y="701" class="blue label">⧉</text>
+      <rect x="698" y="716" width="282" height="52" rx="9" fill="#fafaf8"/>
+      <text x="714" y="748" class="muted small">例如 ZhangSan</text>
+      <rect x="1014" y="670" width="332" height="124" rx="12" fill="#fff" stroke="#dedfd9"/>
+      <text x="1030" y="696" class="text small" font-weight="680">证件号码</text>
+      <rect x="1300" y="682" width="28" height="28" rx="8" fill="#fff" stroke="#dedfd9"/>
+      <text x="1308" y="701" class="blue label">⧉</text>
+      <rect x="1030" y="716" width="298" height="52" rx="9" fill="#fafaf8"/>
+      <text x="1046" y="748" class="muted small">仅保存在当前浏览器</text>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,14 @@
+{
+  "name": "oneform",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "OneForm：填写一次、随用随复制的本地推免报名信息库",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "preview": "node scripts/serve.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check": "npm run build && npm run test"
+  },
+  "license": "MIT"
+}
