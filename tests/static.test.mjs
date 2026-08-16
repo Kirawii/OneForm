@@ -84,6 +84,22 @@ test("单文件发行版已正确构建", async () => {
   assert.match(output, /data-key="nameCn"/);
 });
 
+test("材料工具已构建为可离线打开的单文件", async () => {
+  const [source, output] = await Promise.all([
+    read("materials.html"),
+    read("dist/materials.html"),
+  ]);
+
+  assert.match(source, /id="pdf-tool"/);
+  assert.match(source, /id="photo-tool"/);
+  assert.doesNotMatch(output, /href="src\/material-tools\.css"/);
+  assert.doesNotMatch(output, /src="src\/material-tools\.js"/);
+  assert.match(output, /__ONEFORM_PDF_WORKER__/);
+  assert.match(output, /合并并下载/);
+  assert.match(output, /处理并下载/);
+  assert.doesNotMatch(output, /https:\/\/cdnjs|https:\/\/unpkg|https:\/\/cdn\.jsdelivr/);
+});
+
 test("README 的本地配图完整可用", async () => {
   const [readme, preview, workflow] = await Promise.all([
     read("README.md"),
@@ -98,15 +114,19 @@ test("README 的本地配图完整可用", async () => {
 });
 
 test("GitHub Pages 官网提供在线使用和离线下载", async () => {
-  const [home, guide, app] = await Promise.all([
+  const [home, guide, app, materials] = await Promise.all([
     read("docs/index.html"),
     read("docs/guide.html"),
     read("docs/oneform.html"),
+    read("docs/materials.html"),
   ]);
 
   assert.match(home, /href="oneform\.html">在线使用/);
-  assert.match(home, /href="oneform\.html" download>下载离线版/);
+  assert.match(home, /href="oneform\.html" download>下载信息库/);
+  assert.match(home, /href="materials\.html" download>下载材料工具/);
   assert.match(home, /href="guide\.html"/);
+  assert.match(home, /href="materials\.html"/);
   assert.match(guide, /五分钟上手/);
   assert.match(app, /OneForm/);
+  assert.match(materials, /PDF 合并/);
 });

@@ -1,6 +1,7 @@
 _private/
 *.local.json
 *.tuimian
+node_modules/
+npm-debug.log*
 .DS_Store
 Thumbs.db
-

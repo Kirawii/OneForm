@@ -8,10 +8,10 @@
 
 ![License](https://img.shields.io/badge/license-MIT-2366d1)
 ![Runtime](https://img.shields.io/badge/runtime-Vanilla%20JS-20211f)
-![Dependencies](https://img.shields.io/badge/runtime%20dependencies-0-247653)
+![Build](https://img.shields.io/badge/build-esbuild-247653)
 ![Privacy](https://img.shields.io/badge/data-local--first-b46b19)
 
-[在线使用](https://kirawii.github.io/OneForm/oneform.html) · [下载官网](https://kirawii.github.io/OneForm/) · [新手指引](USER_GUIDE.md) · [参与贡献](#参与贡献)
+[在线使用](https://kirawii.github.io/OneForm/oneform.html) · [材料工具](https://kirawii.github.io/OneForm/materials.html) · [下载官网](https://kirawii.github.io/OneForm/) · [新手指引](USER_GUIDE.md) · [参与贡献](#参与贡献)
 
 </div>
 
@@ -36,6 +36,8 @@
 | 本地保存 | 自动保存到当前浏览器的 `localStorage`，无需账号与服务器 |
 | 备份迁移 | 支持明文 JSON 导入与导出 |
 | 提交核对 | 内置材料清单、统一文件名建议和提交前检查 |
+| PDF 整理 | 支持多文件缩略图、拖动排序、逐页旋转、删页和本地合并 |
+| 证件照处理 | 支持常用或自定义像素、裁剪、旋转、等比例放大和 JPG 大小控制 |
 | 离线发行 | 构建为单个 HTML 文件，下载后即可离线打开 |
 | 打印输出 | 提供适合打印或另存为 PDF 的页面样式 |
 
@@ -86,9 +88,13 @@ npm test
 ```text
 .
 ├─ index.html                    # 页面结构与字段定义
+├─ materials.html                # PDF 与证件照工具页面
 ├─ src/
 │  ├─ styles.css                 # 视觉样式
-│  └─ app.js                     # 保存、搜索、复制和导入导出
+│  ├─ app.js                     # 保存、搜索、复制和导入导出
+│  ├─ material-tools.css         # 材料工具样式
+│  ├─ material-tools.js          # PDF 与图片处理逻辑
+│  └─ material-core.mjs          # 可测试的尺寸与排序函数
 ├─ scripts/
 │  └─ build.mjs                  # 单文件构建脚本
 ├─ tests/
@@ -98,26 +104,30 @@ npm test
 │  ├─ guide.html                 # 面向普通用户的网页指引
 │  ├─ site.css                   # 官网样式
 │  ├─ oneform.html               # 官网在线版与下载文件
+│  ├─ materials.html             # 官网材料工具
 │  ├─ product-preview.svg        # README 产品预览
 │  └─ workflow.svg               # README 工作流
 ├─ dist/
-│  └─ oneform.html               # 可直接打开的发行文件
+│  ├─ oneform.html               # 可直接打开的信息库
+│  └─ materials.html             # 可直接打开的材料工具
 └─ _private/                     # 本机私人资料，已被 Git 忽略
 ```
 
-项目使用原生 HTML、CSS 和 JavaScript，不包含运行时依赖。源码按结构、样式和逻辑拆分，发行时再合并为一个 HTML 文件。
+项目使用原生 HTML、CSS 和 JavaScript。PDF 与图片处理依赖会在构建时内联，发行文件不访问第三方 CDN，也不需要安装软件。
 
 ## 数据与隐私
 
 所有填写内容默认只保存在本机：
 
 - 页面不会主动上传资料；
+- PDF 与照片只在当前页面内存中处理，刷新后即清空；
 - 不包含账号系统、分析埋点、广告、CDN 或远程字体；
 - `localStorage` 与 JSON 备份均为明文；
 - “恢复初始模板”会清除本页面对应的本地资料；
 - 院校要求和材料口径最终应以当年官方通知为准。
 
 详细说明请阅读 [PRIVACY.md](PRIVACY.md) 和 [SECURITY.md](SECURITY.md)。
+第三方依赖与许可证见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
 ## 参与贡献
 
