@@ -10,5 +10,11 @@
     "test": "node --test tests/*.test.mjs",
     "check": "npm run build && npm run test"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "esbuild": "^0.25.12",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^5.4.149",
+    "pica": "^10.0.2"
+  }
 }

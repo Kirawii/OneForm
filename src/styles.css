@@ -42,6 +42,7 @@ nav a{
 nav a:hover,nav a.active{background:var(--panel2);color:var(--text)}
 .step{width:25px;height:25px;display:grid;place-items:center;border:1px solid var(--line);border-radius:8px;font-size:10px;flex:none}
 .side-bottom{margin-top:auto;border-top:1px solid var(--line);padding-top:11px;display:grid;gap:8px}
+.side-bottom a.btn{text-decoration:none;display:flex;align-items:center;justify-content:center}
 .main{min-width:0}
 .toolbar{
   position:sticky;top:18px;z-index:20;padding:11px;display:flex;gap:9px;align-items:center;

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#f5f5f2">
+  <title>材料工具 | OneForm</title>
+  <link rel="stylesheet" href="src/material-tools.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="brand" href="index.html">OneForm</a>
+      <nav aria-label="材料工具导航">
+        <a href="#pdf-tool">PDF 合并</a>
+        <a href="#photo-tool">证件照处理</a>
+        <a class="button compact" href="oneform.html">返回信息库</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="shell">
+    <header class="intro">
+      <p class="eyebrow">材料工具</p>
+      <h1>把报名材料整理成可直接上传的文件</h1>
+      <p>PDF 合并、页面排序和证件照裁剪都在当前浏览器中完成。文件不会上传，处理结束后请及时下载结果。</p>
+    </header>
+
+    <div class="privacy-note" role="note">
+      <strong>本地处理</strong>
+      <span>关闭或刷新页面后，已选择的 PDF 和照片会被清空。</span>
+    </div>
+
+    <section id="pdf-tool" class="tool-section" aria-labelledby="pdf-title">
+      <div class="section-head">
+        <div>
+          <h2 id="pdf-title">PDF 合并</h2>
+          <p>添加多个 PDF，通过缩略图确认内容，拖动排序，逐页旋转或删除。</p>
+        </div>
+        <div class="section-actions">
+          <label class="button primary" for="pdf-input">添加 PDF</label>
+          <input id="pdf-input" class="visually-hidden" type="file" accept="application/pdf,.pdf" multiple>
+          <button id="pdf-download" class="button" type="button" disabled>合并并下载</button>
+        </div>
+      </div>
+
+      <div id="pdf-drop" class="drop-zone" tabindex="0" role="button" aria-controls="pdf-input">
+        <strong>点击添加，或把 PDF 拖到这里</strong>
+        <span>支持多个文件，所有操作仅在本机完成</span>
+      </div>
+
+      <div id="pdf-file-list" class="file-list" aria-live="polite"></div>
+      <div class="page-toolbar">
+        <p id="pdf-summary">尚未添加 PDF</p>
+        <button id="pdf-clear" class="text-button" type="button" disabled>清空列表</button>
+      </div>
+      <div id="pdf-pages" class="page-grid" aria-live="polite"></div>
+      <p id="pdf-status" class="status" role="status"></p>
+    </section>
+
+    <section id="photo-tool" class="tool-section" aria-labelledby="photo-title">
+      <div class="section-head">
+        <div>
+          <h2 id="photo-title">证件照处理</h2>
+          <p>选择常用尺寸，调整位置和缩放，输出准确像素。原图不足时会等比例放大。</p>
+        </div>
+        <label class="button primary" for="photo-input">选择照片</label>
+        <input id="photo-input" class="visually-hidden" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp">
+      </div>
+
+      <div class="photo-layout">
+        <div class="photo-stage-wrap">
+          <div class="photo-stage" id="photo-drop">
+            <canvas id="photo-preview" width="720" height="960" aria-label="证件照裁剪预览"></canvas>
+            <div id="photo-empty" class="photo-empty">
+              <strong>选择一张照片开始</strong>
+              <span>支持 JPG、PNG 和 WebP</span>
+            </div>
+          </div>
+          <p id="photo-info" class="status">尚未选择照片</p>
+        </div>
+
+        <form class="photo-controls" onsubmit="return false">
+          <label>
+            <span>常用尺寸</span>
+            <select id="photo-preset">
+              <option value="295x413">一寸 295 × 413</option>
+              <option value="260x378">小一寸 260 × 378</option>
+              <option value="413x579">二寸 413 × 579</option>
+              <option value="413x531">小二寸 413 × 531</option>
+              <option value="300x400">报名常用 300 × 400</option>
+              <option value="custom">自定义</option>
+            </select>
+          </label>
+
+          <div class="control-row">
+            <label><span>宽度 px</span><input id="photo-width" type="number" min="32" max="6000" value="295"></label>
+            <label><span>高度 px</span><input id="photo-height" type="number" min="32" max="6000" value="413"></label>
+          </div>
+
+          <label>
+            <span>缩放 <output id="zoom-value">100%</output></span>
+            <input id="photo-zoom" type="range" min="100" max="300" value="100">
+          </label>
+          <label>
+            <span>左右位置</span>
+            <input id="photo-pan-x" type="range" min="-100" max="100" value="0">
+          </label>
+          <label>
+            <span>上下位置</span>
+            <input id="photo-pan-y" type="range" min="-100" max="100" value="0">
+          </label>
+
+          <div class="control-group">
+            <span>照片方向</span>
+            <div class="button-row">
+              <button id="photo-left" class="button" type="button">向左旋转</button>
+              <button id="photo-right" class="button" type="button">向右旋转</button>
+            </div>
+          </div>
+
+          <div class="control-row">
+            <label>
+              <span>输出格式</span>
+              <select id="photo-format"><option value="jpeg">JPG</option><option value="png">PNG</option></select>
+            </label>
+            <label>
+              <span>目标大小 KB</span>
+              <input id="photo-size" type="number" min="10" max="20480" value="200">
+            </label>
+          </div>
+          <p class="field-help">JPG 会在保证清晰度的前提下尽量压缩到目标大小。PNG 不支持按大小压缩。</p>
+          <button id="photo-download" class="button primary wide" type="button" disabled>处理并下载</button>
+          <p id="photo-status" class="status" role="status"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer shell">
+    <p>OneForm 开源且本地优先</p>
+    <a href="https://github.com/Kirawii/OneForm">查看源代码</a>
+  </footer>
+  <script src="src/material-tools.js"></script>
+</body>
+</html>

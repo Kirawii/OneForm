@@ -11,10 +11,15 @@
 - `index.html`：语义结构、字段和文案
 - `src/styles.css`：视觉样式
 - `src/app.js`：本地保存、搜索、复制和导入导出
+- `materials.html`：PDF 与证件照工具结构
+- `src/material-tools.js`：PDF 与图片处理逻辑
+- `src/material-core.mjs`：排序、角度和裁剪计算等纯函数
 - `scripts/build.mjs`：生成可离线打开的单文件版本
-- `tests/static.test.mjs`：结构和隐私回归检查
+- `tests/`：纯函数、结构、构建和隐私回归检查
 
 保持原生 HTML、CSS、JavaScript，除非新依赖解决了明确且无法用现有方式处理的问题。
+
+材料工具允许使用经过审查的浏览器端依赖，但必须在构建时内联，保留离线使用能力，并在 `THIRD_PARTY_NOTICES.md` 中记录许可证。
 
 ## 隐私底线
 
