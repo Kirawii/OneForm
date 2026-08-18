@@ -1,5 +1,4 @@
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
-import { PDFDocument, degrees } from "pdf-lib";
 import pica from "pica";
 import {
   createDirectoryPlan,
@@ -15,6 +14,8 @@ import {
 const workerBlob = new Blob([globalThis.__ONEFORM_PDF_WORKER__], { type: "text/javascript" });
 const workerUrl = URL.createObjectURL(workerBlob);
 pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
+const mergeWorkerBlob = new Blob([globalThis.__ONEFORM_MERGE_WORKER__], { type: "text/javascript" });
+const mergeWorkerUrl = URL.createObjectURL(mergeWorkerBlob);
 
 const pdfInput = document.querySelector("#pdf-input");
 const pdfDrop = document.querySelector("#pdf-drop");
@@ -30,16 +31,68 @@ const pdfIncludeToc = document.querySelector("#pdf-include-toc");
 const pdfTocPreview = document.querySelector("#pdf-toc-preview");
 const pdfNumberNames = document.querySelector("#pdf-number-names");
 const pdfResetNames = document.querySelector("#pdf-reset-names");
+const pdfCompressOutput = document.querySelector("#pdf-compress-output");
+const pdfPerformanceNote = document.querySelector("#pdf-performance-note");
+const pdfProgress = document.querySelector("#pdf-progress");
 
 const pdfFiles = new Map();
 const TOC_ITEMS_PER_PAGE = 18;
+const LARGE_PDF_BYTES = 80 * 1024 * 1024;
+const LARGE_PDF_PAGES = 150;
 let pdfPages = [];
 let renderVersion = 0;
 let draggedPageId = "";
+let isExportingPdf = false;
 
 function setStatus(element, message, error = false) {
   element.textContent = message;
   element.classList.toggle("error", error);
+}
+
+function setExportProgress(value, message) {
+  pdfProgress.hidden = false;
+  pdfProgress.value = Math.max(0, Math.min(100, value));
+  setStatus(pdfStatus, message);
+}
+
+function progressRatio(current, total) {
+  return total > 0 ? current / total : 1;
+}
+
+function showMergeProgress(progress, compress) {
+  const ratio = progressRatio(progress.current, progress.total);
+  if (progress.phase === "directory") {
+    setExportProgress(ratio * 10, progress.total ? `正在生成目录 ${progress.current} / ${progress.total}...` : "正在准备材料...");
+  } else if (progress.phase === "parsing") {
+    setExportProgress(10 + ratio * 20, `正在解析文件 ${progress.current} / ${progress.total}...`);
+  } else if (progress.phase === "copying") {
+    setExportProgress(30 + ratio * 55, `正在批量复制页面 ${progress.current} / ${progress.total}...`);
+  } else if (progress.phase === "writing") {
+    const label = compress ? "正在压缩并写入文件..." : "正在快速写入文件...";
+    setExportProgress(85 + ratio * 13, label);
+  }
+}
+
+function mergePdfInWorker(payload, transferables) {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(mergeWorkerUrl);
+    worker.addEventListener("message", event => {
+      if (event.data.type === "progress") showMergeProgress(event.data.progress, payload.compress);
+      if (event.data.type === "complete") {
+        worker.terminate();
+        resolve(new Uint8Array(event.data.bytes));
+      }
+      if (event.data.type === "error") {
+        worker.terminate();
+        reject(new Error(event.data.message));
+      }
+    });
+    worker.addEventListener("error", event => {
+      worker.terminate();
+      reject(new Error(event.message || "PDF 后台任务异常结束"));
+    });
+    worker.postMessage(payload, transferables);
+  });
 }
 
 function escapeHtml(value) {
@@ -75,7 +128,7 @@ async function addPdfFiles(fileList) {
         name: file.name,
         displayName: pdfTitleFromFilename(file.name),
         size: file.size,
-        bytes,
+        file,
         previewDocument,
       });
       for (let pageIndex = 0; pageIndex < previewDocument.numPages; pageIndex += 1) {
@@ -184,6 +237,16 @@ function renderPdfWorkspace() {
     : "尚未添加 PDF";
   pdfDownload.disabled = pdfPages.length === 0;
   pdfClear.disabled = pdfPages.length === 0;
+  const activeFileIds = new Set(pdfPages.map(page => page.fileId));
+  const totalBytes = [...pdfFiles.values()]
+    .filter(file => activeFileIds.has(file.id))
+    .reduce((sum, file) => sum + file.size, 0);
+  const isLarge = totalBytes >= LARGE_PDF_BYTES || pdfPages.length >= LARGE_PDF_PAGES;
+  pdfPerformanceNote.hidden = !isLarge;
+  pdfPerformanceNote.textContent = isLarge
+    ? `当前材料约 ${formatBytes(totalBytes)}、${pdfPages.length} 页。大扫描件会占用较多内存，建议保持“压缩文件体积”关闭，并关闭其他大型网页后再导出。`
+    : "";
+  if (!isExportingPdf) pdfProgress.hidden = true;
   void renderPdfThumbnails(version);
 }
 
@@ -376,50 +439,50 @@ function createTocCanvases(plan, materialPageCount) {
   return canvases;
 }
 
-async function appendTocPages(output, plan) {
-  const pageWidth = 595.28;
-  const pageHeight = 841.89;
+async function createTocImageBuffers(plan) {
+  const buffers = [];
   for (const canvas of createTocCanvases(plan, pdfPages.length)) {
     const blob = await canvasBlob(canvas, "image/png");
-    const image = await output.embedPng(new Uint8Array(await blob.arrayBuffer()));
-    const page = output.addPage([pageWidth, pageHeight]);
-    page.drawImage(image, { x: 0, y: 0, width: pageWidth, height: pageHeight });
+    buffers.push(await blob.arrayBuffer());
   }
+  return buffers;
 }
 
 pdfDownload.addEventListener("click", async () => {
   if (!pdfPages.length) return;
+  isExportingPdf = true;
   pdfDownload.disabled = true;
-  setStatus(pdfStatus, "正在合并 PDF，请保持页面打开...");
+  setExportProgress(1, "正在准备 PDF，请保持页面打开...");
   try {
-    const output = await PDFDocument.create();
     const directoryPlan = currentDirectoryPlan();
     const outputFilename = safePdfFilename(pdfOutputName.value);
-    output.setTitle(outputFilename.replace(/\.pdf$/i, ""));
-    output.setCreator("OneForm");
-    output.setProducer("OneForm local PDF tools");
-    if (directoryPlan.directoryPageCount) {
-      setStatus(pdfStatus, `正在生成 ${directoryPlan.directoryPageCount} 页目录...`);
-      await appendTocPages(output, directoryPlan);
-    }
-    const documents = new Map();
-    for (const [fileId, file] of pdfFiles) documents.set(fileId, await PDFDocument.load(file.bytes));
-    for (let index = 0; index < pdfPages.length; index += 1) {
-      const entry = pdfPages[index];
-      setStatus(pdfStatus, `正在处理第 ${index + 1} / ${pdfPages.length} 页...`);
-      const [copiedPage] = await output.copyPages(documents.get(entry.fileId), [entry.pageIndex]);
-      copiedPage.setRotation(degrees(normalizeRotation(copiedPage.getRotation().angle + entry.rotation)));
-      output.addPage(copiedPage);
-    }
-    const bytes = await output.save({ useObjectStreams: true });
+    const activeFileIds = new Set(pdfPages.map(page => page.fileId));
+    const files = await Promise.all([...pdfFiles.values()]
+      .filter(file => activeFileIds.has(file.id))
+      .map(async file => ({ id: file.id, bytes: await file.file.arrayBuffer() })));
+    const tocImages = await createTocImageBuffers(directoryPlan);
+    const transferables = [...files.map(file => file.bytes), ...tocImages];
+    const bytes = await mergePdfInWorker({
+      files,
+      pages: pdfPages.map(page => ({ ...page })),
+      tocImages,
+      metadata: { title: outputFilename.replace(/\.pdf$/i, "") },
+      compress: pdfCompressOutput.checked,
+    }, transferables);
     downloadBlob(new Blob([bytes], { type: "application/pdf" }), outputFilename);
-    setStatus(pdfStatus, `合并完成，共 ${output.getPageCount()} 页${directoryPlan.directoryPageCount ? `，含 ${directoryPlan.directoryPageCount} 页目录` : ""}，文件大小 ${formatBytes(bytes.byteLength)}。`);
+    setExportProgress(100, `合并完成，共 ${directoryPlan.totalPageCount} 页${directoryPlan.directoryPageCount ? `，含 ${directoryPlan.directoryPageCount} 页目录` : ""}，文件大小 ${formatBytes(bytes.byteLength)}。`);
   } catch (error) {
     console.error(error);
     setStatus(pdfStatus, "合并失败。请检查文件是否加密，并尝试减少文件数量。", true);
   } finally {
+    isExportingPdf = false;
     pdfDownload.disabled = pdfPages.length === 0;
   }
+});
+
+window.addEventListener("pagehide", () => {
+  URL.revokeObjectURL(workerUrl);
+  URL.revokeObjectURL(mergeWorkerUrl);
 });
 
 const photoInput = document.querySelector("#photo-input");

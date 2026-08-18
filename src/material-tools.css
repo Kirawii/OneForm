@@ -43,7 +43,7 @@ a{color:inherit}
 .drop-zone:hover,.drop-zone.dragover{border-color:var(--accent);background:var(--accent-soft)}
 .drop-zone strong{font-size:14px}.drop-zone span{font-size:12px;color:var(--muted)}
 .pdf-organize{margin-top:16px;padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--surface-soft)}
-.organize-fields{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,.8fr);gap:12px;margin-bottom:18px}
+.organize-fields{display:grid;grid-template-columns:minmax(260px,1.2fr) repeat(2,minmax(230px,.8fr));gap:12px;margin-bottom:18px}
 .output-name-field{display:grid;gap:7px}.output-name-field>span{font-size:12px;font-weight:680}
 .output-name-field input,.file-name-input{width:100%;height:40px;padding:0 10px;border:1px solid var(--line);border-radius:9px;background:var(--surface);outline:none}
 .output-name-field input:focus,.file-name-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 14%,transparent)}
@@ -76,6 +76,9 @@ a{color:inherit}
 .page-caption strong{font-size:11px}.page-caption span{margin-top:2px;color:var(--muted);font-size:10px}
 .status{min-height:20px;margin:12px 0 0;color:var(--muted);font-size:12px;line-height:1.6}
 .status.error{color:var(--danger)}
+.performance-note{margin:14px 0 0;padding:10px 12px;border:1px solid #ead9b9;border-radius:10px;background:#fff9ed;color:#765323;font-size:12px;line-height:1.6}
+.export-progress{width:100%;height:7px;display:block;margin:14px 0 0;border:0;border-radius:999px;overflow:hidden;background:var(--line);accent-color:var(--accent)}
+.export-progress[hidden]{display:none}.export-progress::-webkit-progress-bar{background:var(--line)}.export-progress::-webkit-progress-value{background:var(--accent);border-radius:999px}.export-progress::-moz-progress-bar{background:var(--accent);border-radius:999px}
 .photo-layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(270px,.8fr);gap:26px;align-items:start}
 .photo-stage-wrap{min-width:0}.photo-stage{position:relative;min-height:520px;display:grid;place-items:center;padding:28px;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:#eef0ec}
 #photo-preview{display:none;max-width:100%;max-height:540px;width:auto;height:auto;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.12)}

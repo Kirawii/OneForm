@@ -36,7 +36,7 @@
 | 本地保存 | 自动保存到当前浏览器的 `localStorage`，无需账号与服务器 |
 | 备份迁移 | 支持明文 JSON 导入与导出 |
 | 提交核对 | 内置材料清单、统一文件名建议和提交前检查 |
-| PDF 整理 | 支持材料命名、自动目录、缩略图、拖动排序、逐页旋转、删页和本地合并 |
+| PDF 整理 | 支持材料命名、自动目录、缩略图、排序旋转、后台快速合并和可选体积压缩 |
 | 证件照处理 | 支持常用或自定义像素、裁剪、旋转、等比例放大和 JPG 大小控制 |
 | 离线发行 | 构建为单个 HTML 文件，下载后即可离线打开 |
 | 打印输出 | 提供适合打印或另存为 PDF 的页面样式 |
@@ -93,7 +93,9 @@ npm test
 │  ├─ styles.css                 # 视觉样式
 │  ├─ app.js                     # 保存、搜索、复制和导入导出
 │  ├─ material-tools.css         # 材料工具样式
-│  ├─ material-tools.js          # PDF 与图片处理逻辑
+│  ├─ material-tools.js          # PDF 与图片交互逻辑
+│  ├─ pdf-merge-core.mjs         # PDF 批量合并核心
+│  ├─ pdf-merge-worker.js        # PDF 后台合并线程
 │  └─ material-core.mjs          # 可测试的尺寸与排序函数
 ├─ scripts/
 │  └─ build.mjs                  # 单文件构建脚本
