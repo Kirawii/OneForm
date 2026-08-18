@@ -12,6 +12,7 @@ const pagesOutputPath = resolve(root, "docs/oneform.html");
 const materialsSourcePath = resolve(root, "materials.html");
 const materialsCssPath = resolve(root, "src/material-tools.css");
 const materialsJsPath = resolve(root, "src/material-tools.js");
+const mergeWorkerPath = resolve(root, "src/pdf-merge-worker.js");
 const pdfWorkerPath = resolve(root, "node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs");
 const materialsOutputPath = resolve(root, "dist/materials.html");
 const pagesMaterialsOutputPath = resolve(root, "docs/materials.html");
@@ -47,6 +48,14 @@ const materialsBuild = await build({
   write: false,
   banner: { js: `globalThis.__ONEFORM_PDF_WORKER__=${JSON.stringify(pdfWorkerSource)};` },
 });
+const mergeWorkerBuild = await build({
+  entryPoints: [mergeWorkerPath],
+  bundle: true,
+  format: "iife",
+  target: ["es2022"],
+  minify: true,
+  write: false,
+});
 const materialsStyleTag = '<link rel="stylesheet" href="src/material-tools.css">';
 const materialsScriptTag = '<script src="src/material-tools.js"></script>';
 if (!materialsHtml.includes(materialsStyleTag) || !materialsHtml.includes(materialsScriptTag)) {
@@ -54,7 +63,7 @@ if (!materialsHtml.includes(materialsStyleTag) || !materialsHtml.includes(materi
 }
 const materialsBundled = materialsHtml
   .replace(materialsStyleTag, () => `<style>\n${materialsCss}</style>`)
-  .replace(materialsScriptTag, () => `<script>\n${materialsBuild.outputFiles[0].text}</script>`);
+  .replace(materialsScriptTag, () => `<script>\nglobalThis.__ONEFORM_MERGE_WORKER__=${JSON.stringify(mergeWorkerBuild.outputFiles[0].text)};\n${materialsBuild.outputFiles[0].text}</script>`);
 
 await Promise.all([
   mkdir(dirname(outputPath), { recursive: true }),
