@@ -1,7 +1,16 @@
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import { PDFDocument, degrees } from "pdf-lib";
 import pica from "pica";
-import { cropRect, formatBytes, moveItem, normalizeRotation } from "./material-core.mjs";
+import {
+  createDirectoryPlan,
+  cropRect,
+  formatBytes,
+  moveItem,
+  normalizeRotation,
+  numberedPdfTitle,
+  pdfTitleFromFilename,
+  safePdfFilename,
+} from "./material-core.mjs";
 
 const workerBlob = new Blob([globalThis.__ONEFORM_PDF_WORKER__], { type: "text/javascript" });
 const workerUrl = URL.createObjectURL(workerBlob);
@@ -15,8 +24,15 @@ const pdfSummary = document.querySelector("#pdf-summary");
 const pdfStatus = document.querySelector("#pdf-status");
 const pdfDownload = document.querySelector("#pdf-download");
 const pdfClear = document.querySelector("#pdf-clear");
+const pdfOrganize = document.querySelector("#pdf-organize");
+const pdfOutputName = document.querySelector("#pdf-output-name");
+const pdfIncludeToc = document.querySelector("#pdf-include-toc");
+const pdfTocPreview = document.querySelector("#pdf-toc-preview");
+const pdfNumberNames = document.querySelector("#pdf-number-names");
+const pdfResetNames = document.querySelector("#pdf-reset-names");
 
 const pdfFiles = new Map();
+const TOC_ITEMS_PER_PAGE = 18;
 let pdfPages = [];
 let renderVersion = 0;
 let draggedPageId = "";
@@ -54,7 +70,14 @@ async function addPdfFiles(fileList) {
       const loadingTask = pdfjsLib.getDocument({ data: bytes.slice() });
       const previewDocument = await loadingTask.promise;
       const fileId = crypto.randomUUID();
-      pdfFiles.set(fileId, { id: fileId, name: file.name, size: file.size, bytes, previewDocument });
+      pdfFiles.set(fileId, {
+        id: fileId,
+        name: file.name,
+        displayName: pdfTitleFromFilename(file.name),
+        size: file.size,
+        bytes,
+        previewDocument,
+      });
       for (let pageIndex = 0; pageIndex < previewDocument.numPages; pageIndex += 1) {
         pdfPages.push({ id: crypto.randomUUID(), fileId, pageIndex, rotation: 0 });
       }
@@ -95,14 +118,47 @@ function renderPdfFiles() {
   pdfFileList.innerHTML = [...pdfFiles.values()].map(file => {
     const count = pdfPages.filter(page => page.fileId === file.id).length;
     return `<div class="file-row" data-file-id="${file.id}">
-      <div class="file-meta"><strong title="${escapeHtml(file.name)}">${escapeHtml(file.name)}</strong><span>${count} 页 · ${formatBytes(file.size)}</span></div>
+      <div class="file-name-block">
+        <label for="pdf-name-${file.id}">材料名称</label>
+        <input class="file-name-input" id="pdf-name-${file.id}" data-file-name value="${escapeHtml(file.displayName)}" maxlength="80">
+        <div class="file-meta" title="${escapeHtml(file.name)}">原文件：${escapeHtml(file.name)}，${count} 页，${formatBytes(file.size)}</div>
+      </div>
       <div class="file-actions">
-        <button class="icon-button" type="button" data-file-action="left" title="全部向左旋转" aria-label="${escapeHtml(file.name)} 全部向左旋转">↶</button>
-        <button class="icon-button" type="button" data-file-action="right" title="全部向右旋转" aria-label="${escapeHtml(file.name)} 全部向右旋转">↷</button>
+        <button class="icon-button" type="button" data-file-action="left" title="全部向左旋转" aria-label="${escapeHtml(file.displayName)} 全部向左旋转">↶</button>
+        <button class="icon-button" type="button" data-file-action="right" title="全部向右旋转" aria-label="${escapeHtml(file.displayName)} 全部向右旋转">↷</button>
         <button class="icon-button danger" type="button" data-file-action="remove" title="移除文件" aria-label="移除 ${escapeHtml(file.name)}">×</button>
       </div>
     </div>`;
   }).join("");
+}
+
+function currentDirectoryPlan() {
+  return createDirectoryPlan(pdfPages, [...pdfFiles.values()], pdfIncludeToc.checked, TOC_ITEMS_PER_PAGE);
+}
+
+function renderDirectoryPreview() {
+  const plan = currentDirectoryPlan();
+  pdfOrganize.hidden = pdfPages.length === 0;
+  if (!pdfPages.length) {
+    pdfTocPreview.innerHTML = "";
+    return plan;
+  }
+  if (!pdfIncludeToc.checked) {
+    pdfTocPreview.innerHTML = '<li class="toc-empty">目录已关闭，合并时不会插入目录页。</li>';
+    return plan;
+  }
+  pdfTocPreview.innerHTML = plan.entries.map(entry => `<li data-toc-file-id="${entry.fileId}"><strong title="${escapeHtml(entry.title)}">${escapeHtml(entry.title)}</strong><span>第 ${entry.page} 页</span></li>`).join("");
+  return plan;
+}
+
+function updatePageTitles(fileId) {
+  const file = pdfFiles.get(fileId);
+  if (!file) return;
+  pdfPagesBox.querySelectorAll(`[data-file-id="${fileId}"] .page-material-title`).forEach((element, index) => {
+    const pageCard = element.closest(".page-card");
+    const globalIndex = [...pdfPagesBox.children].indexOf(pageCard);
+    element.textContent = `${globalIndex + 1}. ${file.displayName || pdfTitleFromFilename(file.name)}`;
+  });
 }
 
 function renderPdfWorkspace() {
@@ -110,10 +166,10 @@ function renderPdfWorkspace() {
   renderPdfFiles();
   pdfPagesBox.innerHTML = pdfPages.map((page, index) => {
     const file = pdfFiles.get(page.fileId);
-    return `<article class="page-card" draggable="true" data-page-id="${page.id}">
+    return `<article class="page-card" draggable="true" data-page-id="${page.id}" data-file-id="${page.fileId}">
       <div class="page-thumb"><span>正在生成缩略图</span></div>
       <div class="page-caption">
-        <div><strong>${index + 1}. ${escapeHtml(file?.name || "PDF")}</strong><span>原文件第 ${page.pageIndex + 1} 页</span></div>
+        <div><strong class="page-material-title">${index + 1}. ${escapeHtml(file?.displayName || file?.name || "PDF")}</strong><span>原文件第 ${page.pageIndex + 1} 页</span></div>
       </div>
       <div class="page-actions">
         <button class="icon-button" type="button" data-page-action="left" title="向左旋转" aria-label="第 ${index + 1} 页向左旋转">↶</button>
@@ -122,7 +178,10 @@ function renderPdfWorkspace() {
       </div>
     </article>`;
   }).join("");
-  pdfSummary.textContent = pdfPages.length ? `${pdfFiles.size} 个文件，共 ${pdfPages.length} 页` : "尚未添加 PDF";
+  const directoryPlan = renderDirectoryPreview();
+  pdfSummary.textContent = pdfPages.length
+    ? `${directoryPlan.entries.length} 个文件，共 ${pdfPages.length} 页材料${directoryPlan.directoryPageCount ? `，合并后 ${directoryPlan.totalPageCount} 页` : ""}`
+    : "尚未添加 PDF";
   pdfDownload.disabled = pdfPages.length === 0;
   pdfClear.disabled = pdfPages.length === 0;
   void renderPdfThumbnails(version);
@@ -166,6 +225,17 @@ pdfFileList.addEventListener("click", event => {
   if (button.dataset.fileAction === "left") rotateFile(fileId, -90);
   if (button.dataset.fileAction === "right") rotateFile(fileId, 90);
   if (button.dataset.fileAction === "remove") void removeFile(fileId);
+});
+
+pdfFileList.addEventListener("input", event => {
+  const input = event.target.closest("[data-file-name]");
+  if (!input) return;
+  const fileId = input.closest("[data-file-id]").dataset.fileId;
+  const file = pdfFiles.get(fileId);
+  if (!file) return;
+  file.displayName = input.value;
+  updatePageTitles(fileId);
+  renderDirectoryPreview();
 });
 
 pdfPagesBox.addEventListener("click", event => {
@@ -234,6 +304,88 @@ for (const eventName of ["dragleave", "drop"]) {
 }
 pdfDrop.addEventListener("drop", event => void addPdfFiles(event.dataTransfer.files));
 pdfClear.addEventListener("click", () => void clearPdfs());
+pdfIncludeToc.addEventListener("change", renderPdfWorkspace);
+pdfNumberNames.addEventListener("click", () => {
+  const plan = createDirectoryPlan(pdfPages, [...pdfFiles.values()], false, TOC_ITEMS_PER_PAGE);
+  plan.entries.forEach((entry, index) => {
+    const file = pdfFiles.get(entry.fileId);
+    if (file) file.displayName = numberedPdfTitle(file.displayName || file.name, index, plan.entries.length);
+  });
+  renderPdfWorkspace();
+});
+pdfResetNames.addEventListener("click", () => {
+  pdfFiles.forEach(file => { file.displayName = pdfTitleFromFilename(file.name); });
+  renderPdfWorkspace();
+});
+
+function fitCanvasText(context, text, maxWidth) {
+  const value = String(text || "未命名材料");
+  if (context.measureText(value).width <= maxWidth) return value;
+  let end = value.length;
+  while (end > 1 && context.measureText(`${value.slice(0, end)}…`).width > maxWidth) end -= 1;
+  return `${value.slice(0, end)}…`;
+}
+
+function createTocCanvases(plan, materialPageCount) {
+  const canvases = [];
+  for (let pageIndex = 0; pageIndex < plan.directoryPageCount; pageIndex += 1) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1240;
+    canvas.height = 1754;
+    const context = canvas.getContext("2d", { alpha: false });
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = "#20211f";
+    context.font = '700 60px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif';
+    context.fillText("推免申请材料目录", 105, 160);
+    context.fillStyle = "#70736d";
+    context.font = '400 24px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif';
+    context.fillText(`目录 ${plan.directoryPageCount} 页，材料 ${materialPageCount} 页，合计 ${plan.totalPageCount} 页`, 108, 215);
+    context.strokeStyle = "#dedfd9";
+    context.lineWidth = 2;
+    context.beginPath();
+    context.moveTo(108, 260);
+    context.lineTo(1132, 260);
+    context.stroke();
+
+    const entries = plan.entries.slice(pageIndex * TOC_ITEMS_PER_PAGE, (pageIndex + 1) * TOC_ITEMS_PER_PAGE);
+    entries.forEach((entry, index) => {
+      const y = 340 + index * 70;
+      const sequence = String(pageIndex * TOC_ITEMS_PER_PAGE + index + 1).padStart(2, "0");
+      context.fillStyle = "#70736d";
+      context.font = '500 24px ui-monospace,"SFMono-Regular",Consolas,monospace';
+      context.fillText(sequence, 108, y);
+      context.fillStyle = "#20211f";
+      context.font = '600 30px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif';
+      context.fillText(fitCanvasText(context, entry.title, 760), 180, y);
+      context.fillStyle = "#2366d1";
+      context.font = '650 28px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif';
+      context.textAlign = "right";
+      context.fillText(`第 ${entry.page} 页`, 1130, y);
+      context.textAlign = "left";
+    });
+
+    context.fillStyle = "#70736d";
+    context.font = '400 21px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif';
+    context.fillText("OneForm 本地生成", 108, 1660);
+    context.textAlign = "right";
+    context.fillText(`目录 ${pageIndex + 1} / ${plan.directoryPageCount}`, 1130, 1660);
+    context.textAlign = "left";
+    canvases.push(canvas);
+  }
+  return canvases;
+}
+
+async function appendTocPages(output, plan) {
+  const pageWidth = 595.28;
+  const pageHeight = 841.89;
+  for (const canvas of createTocCanvases(plan, pdfPages.length)) {
+    const blob = await canvasBlob(canvas, "image/png");
+    const image = await output.embedPng(new Uint8Array(await blob.arrayBuffer()));
+    const page = output.addPage([pageWidth, pageHeight]);
+    page.drawImage(image, { x: 0, y: 0, width: pageWidth, height: pageHeight });
+  }
+}
 
 pdfDownload.addEventListener("click", async () => {
   if (!pdfPages.length) return;
@@ -241,6 +393,15 @@ pdfDownload.addEventListener("click", async () => {
   setStatus(pdfStatus, "正在合并 PDF，请保持页面打开...");
   try {
     const output = await PDFDocument.create();
+    const directoryPlan = currentDirectoryPlan();
+    const outputFilename = safePdfFilename(pdfOutputName.value);
+    output.setTitle(outputFilename.replace(/\.pdf$/i, ""));
+    output.setCreator("OneForm");
+    output.setProducer("OneForm local PDF tools");
+    if (directoryPlan.directoryPageCount) {
+      setStatus(pdfStatus, `正在生成 ${directoryPlan.directoryPageCount} 页目录...`);
+      await appendTocPages(output, directoryPlan);
+    }
     const documents = new Map();
     for (const [fileId, file] of pdfFiles) documents.set(fileId, await PDFDocument.load(file.bytes));
     for (let index = 0; index < pdfPages.length; index += 1) {
@@ -251,8 +412,8 @@ pdfDownload.addEventListener("click", async () => {
       output.addPage(copiedPage);
     }
     const bytes = await output.save({ useObjectStreams: true });
-    downloadBlob(new Blob([bytes], { type: "application/pdf" }), `OneForm-合并材料-${new Date().toISOString().slice(0, 10)}.pdf`);
-    setStatus(pdfStatus, `合并完成，共 ${pdfPages.length} 页，文件大小 ${formatBytes(bytes.byteLength)}。`);
+    downloadBlob(new Blob([bytes], { type: "application/pdf" }), outputFilename);
+    setStatus(pdfStatus, `合并完成，共 ${output.getPageCount()} 页${directoryPlan.directoryPageCount ? `，含 ${directoryPlan.directoryPageCount} 页目录` : ""}，文件大小 ${formatBytes(bytes.byteLength)}。`);
   } catch (error) {
     console.error(error);
     setStatus(pdfStatus, "合并失败。请检查文件是否加密，并尝试减少文件数量。", true);

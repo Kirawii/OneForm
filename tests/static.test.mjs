@@ -85,8 +85,9 @@ test("单文件发行版已正确构建", async () => {
 });
 
 test("材料工具已构建为可离线打开的单文件", async () => {
-  const [source, output] = await Promise.all([
+  const [source, script, output] = await Promise.all([
     read("materials.html"),
+    read("src/material-tools.js"),
     read("dist/materials.html"),
   ]);
 
@@ -96,6 +97,9 @@ test("材料工具已构建为可离线打开的单文件", async () => {
   assert.doesNotMatch(output, /src="src\/material-tools\.js"/);
   assert.match(output, /__ONEFORM_PDF_WORKER__/);
   assert.match(output, /合并并下载/);
+  assert.match(output, /id="pdf-output-name"/);
+  assert.match(output, /自动生成目录/);
+  assert.match(script, /目录已关闭/);
   assert.match(output, /处理并下载/);
   assert.doesNotMatch(output, /https:\/\/cdnjs|https:\/\/unpkg|https:\/\/cdn\.jsdelivr/);
 });

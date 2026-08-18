@@ -52,6 +52,26 @@
       </div>
 
       <div id="pdf-file-list" class="file-list" aria-live="polite"></div>
+      <div id="pdf-organize" class="pdf-organize" hidden>
+        <div class="organize-fields">
+          <label class="output-name-field" for="pdf-output-name">
+            <span>合并文件名</span>
+            <input id="pdf-output-name" type="text" value="OneForm-推免申请材料" maxlength="80">
+          </label>
+          <label class="toc-toggle" for="pdf-include-toc">
+            <input id="pdf-include-toc" type="checkbox" checked>
+            <span><strong>自动生成目录</strong><small>目录页会放在材料之前，页码随排序自动更新</small></span>
+          </label>
+        </div>
+        <div class="organize-head">
+          <div><h3>材料名称与目录</h3><p>名称只用于目录和页面管理，不会修改原始文件。</p></div>
+          <div class="organize-actions">
+            <button id="pdf-number-names" class="text-button" type="button">按顺序编号</button>
+            <button id="pdf-reset-names" class="text-button" type="button">恢复原名</button>
+          </div>
+        </div>
+        <ol id="pdf-toc-preview" class="toc-preview" aria-live="polite"></ol>
+      </div>
       <div class="page-toolbar">
         <p id="pdf-summary">尚未添加 PDF</p>
         <button id="pdf-clear" class="text-button" type="button" disabled>清空列表</button>
