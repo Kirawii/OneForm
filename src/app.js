@@ -14,7 +14,7 @@ const dynamicTableConfigs={
     {suffix:'Project',placeholder:'项目名称'},
     {suffix:'Level',placeholder:'国家级 / 省级 / 校级'},
     {suffix:'Role',placeholder:'排名或主要职责'},
-    {suffix:'Detail',placeholder:'主要工作内容'}
+    {suffix:'Detail',placeholder:'主要工作内容',multiline:true}
   ]},
   competitionTable:{storageKey:'competitions',prefix:'comp',fields:[
     {suffix:'Person',placeholder:'姓名及排名'},
@@ -31,7 +31,7 @@ const dynamicTableConfigs={
   ]},
   customTable:{storageKey:'customFields',prefix:'custom',fields:[
     {suffix:'Label',placeholder:'例如：本科专业方向'},
-    {suffix:'Value',placeholder:'填写内容'},
+    {suffix:'Value',placeholder:'填写内容',multiline:true},
     {suffix:'Note',placeholder:'可选'}
   ]}
 };
@@ -170,8 +170,8 @@ function exportData(){
   a.download=`推免报名信息-${data().nameCn||'姓名'}-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(url)
 }
 function openImport(){
-  document.getElementById('jsonArea').value='';document.getElementById('dialogTitle').innerText='导入 JSON 备份';
-  document.getElementById('dialogHint').innerHTML='粘贴 JSON 后应用，或 <button class="btn small" onclick="fileInput.click()">选择 JSON 文件</button>';
+  document.getElementById('jsonArea').value='';document.getElementById('dialogTitle').innerText='导入备份';
+  document.getElementById('dialogHint').innerHTML='选择之前下载的备份文件，也可以粘贴文件内容。 <button class="btn small" onclick="fileInput.click()">选择备份文件</button>';
   jsonDialog.showModal()
 }
 function applyObject(obj){
@@ -185,7 +185,7 @@ function applyImport(){
   catch{toast('JSON 格式不正确')}
 }
 function resetAll(){
-  if(!confirm('确定恢复本版初始模板吗？浏览器中已填写的内容会被清除。'))return;
+  if(!confirm('清空所有资料和勾选记录？如需保留，请先下载备份。'))return;
   localStorage.removeItem(PROFILE_KEY);localStorage.removeItem(CHECK_KEY);localStorage.removeItem(SUBMIT_KEY);location.reload()
 }
 function clearSubmitChecks(){
@@ -204,16 +204,22 @@ function initTableCopyButtons(root=document){
     const cell=input.closest('td'),row=cell.closest('tr'),table=cell.closest('table');
     const column=[...row.children].indexOf(cell);
     const heading=table.querySelectorAll('thead th')[column]?.innerText.trim()||'该字段';
+    input.setAttribute('aria-label',heading);
     const wrap=document.createElement('div'),button=document.createElement('button');
     wrap.className='table-input-wrap';
     button.type='button';
     button.className='icon table-copy';
-    button.innerText='⧉';
+    decorateCopyButton(button);
     button.title=`复制${heading}`;
     button.setAttribute('aria-label',`复制${heading}`);
     button.addEventListener('click',()=>copyKey(input.dataset.key));
     input.before(wrap);wrap.append(input,button)
   })
+}
+
+function decorateCopyButton(button){
+  button.classList.add('copy-icon');
+  button.innerHTML='<svg viewBox="0 0 20 20" aria-hidden="true"><rect x="7" y="7" width="9" height="10" rx="2"/><path d="M12 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h2"/></svg>'
 }
 
 function rowsFromLegacy(profile,config){
@@ -235,7 +241,9 @@ function renderDynamicTable(id,rows){
   if(!config||!table)return;
   const safeRows=rows?.length?rows:[{}];
   table.querySelector('tbody').innerHTML=safeRows.map((row,index)=>`<tr>${config.fields.map(field=>
-    `<td><input data-key="${config.prefix}${index+1}${field.suffix}" data-row-field="${field.suffix}" value="${escAttr(row[field.suffix]||'')}" placeholder="${escAttr(field.placeholder||'')}"></td>`
+    `<td>${field.multiline
+      ? `<textarea rows="3" data-key="${config.prefix}${index+1}${field.suffix}" data-row-field="${field.suffix}" placeholder="${escAttr(field.placeholder||'')}">${esc(row[field.suffix]||'')}</textarea>`
+      : `<input data-key="${config.prefix}${index+1}${field.suffix}" data-row-field="${field.suffix}" value="${escAttr(row[field.suffix]||'')}" placeholder="${escAttr(field.placeholder||'')}">`}</td>`
   ).join('')}<td class="row-action"><button type="button" class="icon row-remove" data-remove-row="${index}" title="删除这一项" aria-label="删除这一项">−</button></td></tr>`).join('');
   initTableCopyButtons(table)
 }
@@ -259,6 +267,16 @@ document.addEventListener('click',event=>{
 });
 restoreDynamicTables();
 initTableCopyButtons();
+document.querySelectorAll('.field').forEach(field=>{
+  const input=field.querySelector('[data-key]'),label=field.querySelector('label'),button=field.querySelector('.fieldtools button');
+  if(input&&label){input.id=input.id||input.dataset.key;label.htmlFor=input.id}
+  if(button){decorateCopyButton(button);button.type='button';button.title=button.ariaLabel=`复制${label?.textContent||'内容'}`}
+});
+const toolsMenu=document.querySelector('.tools-menu');
+document.addEventListener('click',event=>{
+  if(toolsMenu&&(!toolsMenu.contains(event.target)||event.target.closest('.tools-popover button')))toolsMenu.open=false
+});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&toolsMenu?.open){toolsMenu.open=false;toolsMenu.querySelector('summary').focus()}});
 document.addEventListener('input',event=>{if(event.target.matches('[data-key]'))save(false)});
 document.querySelectorAll('[data-check],[data-submit-check]').forEach(e=>e.addEventListener('change',()=>save(false)));
 document.getElementById('fileInput').addEventListener('change',async e=>{
@@ -269,7 +287,8 @@ document.getElementById('fileInput').addEventListener('change',async e=>{
 document.getElementById('search').addEventListener('input',e=>{
   const q=e.target.value.trim().toLowerCase();let count=0;
   document.querySelectorAll('.field,.card,tbody tr').forEach(x=>{
-    const text=((x.dataset.search||'')+' '+x.innerText+' '+[...x.querySelectorAll('input,textarea')].map(a=>a.value).join(' ')).toLowerCase();
+    const headings=x.closest('table')?.querySelector('thead')?.innerText||'';
+    const text=((x.dataset.search||'')+' '+headings+' '+x.innerText+' '+[...x.querySelectorAll('input,textarea')].map(a=>a.value).join(' ')).toLowerCase();
     const ok=!q||text.includes(q);x.classList.toggle('hidden',!ok);if(ok)count++
   });
   document.querySelectorAll('main section').forEach(s=>{
