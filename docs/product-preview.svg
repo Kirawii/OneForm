@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
   <title id="title">OneForm 界面预览</title>
-  <desc id="desc">左侧为十三步资料目录，右侧包含搜索、核心操作、快速格式和基本信息字段。</desc>
+  <desc id="desc">左侧为资料目录，右侧包含搜索、核心操作、可增减的外语条目和基本信息字段。</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#eef3fb"/>
@@ -30,17 +30,17 @@
     <g class="label">
       <rect x="74" y="202" width="212" height="42" rx="10" fill="#fafaf8"/>
       <rect x="84" y="210" width="25" height="25" rx="8" fill="#fff" stroke="#dedfd9"/>
-      <text x="91" y="227" class="muted tiny">00</text><text x="121" y="228" class="text">快速格式</text>
+      <text x="91" y="227" class="muted tiny">02</text><text x="121" y="228" class="text">基本信息</text>
       <rect x="84" y="254" width="25" height="25" rx="8" fill="#fff" stroke="#dedfd9"/>
-      <text x="91" y="271" class="muted tiny">02</text><text x="121" y="272" class="muted">基本信息</text>
+      <text x="91" y="271" class="muted tiny">05</text><text x="121" y="272" class="muted">外语水平</text>
       <rect x="84" y="298" width="25" height="25" rx="8" fill="#fff" stroke="#dedfd9"/>
-      <text x="91" y="315" class="muted tiny">03</text><text x="121" y="316" class="muted">家庭主要成员</text>
+      <text x="91" y="315" class="muted tiny">06</text><text x="121" y="316" class="muted">科研训练</text>
       <rect x="84" y="342" width="25" height="25" rx="8" fill="#fff" stroke="#dedfd9"/>
-      <text x="91" y="359" class="muted tiny">04</text><text x="121" y="360" class="muted">学习信息</text>
+      <text x="91" y="359" class="muted tiny">07</text><text x="121" y="360" class="muted">学科竞赛</text>
       <rect x="84" y="386" width="25" height="25" rx="8" fill="#fff" stroke="#dedfd9"/>
-      <text x="91" y="403" class="muted tiny">05</text><text x="121" y="404" class="muted">外语水平</text>
+      <text x="91" y="403" class="muted tiny">08</text><text x="121" y="404" class="muted">奖励情况</text>
       <rect x="84" y="430" width="25" height="25" rx="8" fill="#fff" stroke="#dedfd9"/>
-      <text x="91" y="447" class="muted tiny">06</text><text x="121" y="448" class="muted">实践经历</text>
+      <text x="91" y="447" class="muted tiny">＋</text><text x="121" y="448" class="muted">自定义字段</text>
       <rect x="84" y="474" width="25" height="25" rx="8" fill="#fff" stroke="#dedfd9"/>
       <text x="91" y="491" class="muted tiny">07</text><text x="121" y="492" class="muted">学术成果</text>
       <rect x="84" y="518" width="25" height="25" rx="8" fill="#fff" stroke="#dedfd9"/>
@@ -78,29 +78,23 @@
     <text x="632" y="336" class="text small">打印 PDF</text>
 
     <rect x="322" y="378" width="1060" height="186" rx="17" fill="#fff" stroke="#dedfd9"/>
-    <text x="350" y="417" class="text" font-size="19" font-weight="730">快速格式</text>
-    <text x="350" y="439" class="muted small">由基础字段自动生成常见格式，点击即可复制。</text>
+    <text x="350" y="417" class="text" font-size="19" font-weight="730">05 · 外语水平</text>
+    <text x="350" y="439" class="muted small">按实际情况添加，每项成绩单独保存。</text>
+    <rect x="1225" y="399" width="121" height="31" rx="8" fill="#fff" stroke="#dedfd9"/>
+    <text x="1247" y="419" class="blue small" font-weight="700">＋ 添加一项</text>
     <g>
-      <rect x="350" y="462" width="240" height="78" rx="12" fill="#fff" stroke="#dedfd9"/>
-      <text x="366" y="484" class="muted tiny">姓名拼音（无空格）</text>
-      <text x="366" y="511" class="text label">ZhangSan</text>
-      <rect x="540" y="495" width="34" height="28" rx="8" fill="#fafaf8" stroke="#dedfd9"/>
-      <text x="551" y="513" class="blue small">复制</text>
-      <rect x="602" y="462" width="240" height="78" rx="12" fill="#fff" stroke="#dedfd9"/>
-      <text x="618" y="484" class="muted tiny">中文姓名</text>
-      <text x="618" y="511" class="text label">张三</text>
-      <rect x="792" y="495" width="34" height="28" rx="8" fill="#fafaf8" stroke="#dedfd9"/>
-      <text x="803" y="513" class="blue small">复制</text>
-      <rect x="854" y="462" width="240" height="78" rx="12" fill="#fff" stroke="#dedfd9"/>
-      <text x="870" y="484" class="muted tiny">排名（标准口径）</text>
-      <text x="870" y="511" class="text label">12/124（前10%）</text>
-      <rect x="1044" y="495" width="34" height="28" rx="8" fill="#fafaf8" stroke="#dedfd9"/>
-      <text x="1055" y="513" class="blue small">复制</text>
-      <rect x="1106" y="462" width="240" height="78" rx="12" fill="#fff" stroke="#dedfd9"/>
-      <text x="1122" y="484" class="muted tiny">出生日期 YYYY-MM-DD</text>
-      <text x="1122" y="511" class="text label">2004-01-01</text>
-      <rect x="1296" y="495" width="34" height="28" rx="8" fill="#fafaf8" stroke="#dedfd9"/>
-      <text x="1307" y="513" class="blue small">复制</text>
+      <rect x="350" y="456" width="996" height="84" rx="12" fill="#fff" stroke="#dedfd9"/>
+      <rect x="350" y="456" width="996" height="30" rx="12" fill="#fafaf8"/>
+      <text x="370" y="476" class="muted tiny">外语水平</text>
+      <text x="620" y="476" class="muted tiny">成绩</text>
+      <text x="820" y="476" class="muted tiny">取得成绩时间</text>
+      <text x="1080" y="476" class="muted tiny">备注</text>
+      <line x1="350" y1="486" x2="1346" y2="486" class="line"/>
+      <text x="370" y="516" class="muted small">CET-4 / CET-6 / IELTS / TOEFL</text>
+      <text x="620" y="516" class="muted small">填写成绩</text>
+      <text x="820" y="516" class="muted small">YYYY-MM</text>
+      <text x="1080" y="516" class="muted small">可选</text>
+      <text x="1308" y="516" class="blue label">⧉</text>
     </g>
 
     <rect x="322" y="582" width="1060" height="242" rx="17" fill="#fff" stroke="#dedfd9"/>

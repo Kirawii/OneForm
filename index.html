@@ -19,7 +19,6 @@
     <div class="track"><div class="bar" id="progressBar"></div></div>
   </div>
   <nav id="nav">
-    <a href="#quick"><span class="step">00</span>快速格式</a>
     <a href="#basic"><span class="step">02</span>基本信息</a>
     <a href="#family"><span class="step">03</span>家庭主要成员</a>
     <a href="#study"><span class="step">04</span>学习信息</a>
@@ -27,6 +26,7 @@
     <a href="#practice"><span class="step">06</span>实践经历</a>
     <a href="#academic"><span class="step">07</span>学术成果</a>
     <a href="#awards"><span class="step">08</span>奖励情况</a>
+    <a href="#custom"><span class="step">＋</span>自定义字段</a>
     <a href="#application"><span class="step">09</span>申请信息</a>
     <a href="#referee"><span class="step">10</span>推荐人信息</a>
     <a href="#photo"><span class="step">11</span>上传照片</a>
@@ -66,14 +66,6 @@
     <div><strong>公开版不内置任何真实个人资料。</strong>请只填写你已确认的经历与证明材料；未发表成果应与“已发表论文”分开记录，避免报名口径失实。</div>
   </div>
 
-  <section id="quick">
-    <div class="head">
-      <div><h3>快速格式</h3><p>同一信息在不同系统中经常要求不同格式，以下内容由基础字段自动生成。</p></div>
-      <div class="actions"><button class="btn small" onclick="copyQuick()">复制本区</button></div>
-    </div>
-    <div class="derived" id="derived"></div>
-  </section>
-
   <section id="basic">
     <div class="head">
       <div><h3>02 · 基本信息</h3><p>对应真实系统中的姓名、证件、出生信息、户籍地址和联系方式。</p></div>
@@ -90,24 +82,9 @@
         <div class="hint">东南大学页面要求按“姓在前、字母间不加字符”的格式填写。</div>
       </div>
       <div class="field" data-search="">
-        <div class="fieldtop"><label>英文姓名（常规格式）</label><div class="fieldtools"><button class="icon" onclick="copyKey('nameEn')">⧉</button></div></div>
-        <input data-key="nameEn" id="nameEn" type="text" value="">
-      </div>
-
-      <div class="field" data-search="">
-        <div class="fieldtop"><label>证件类型</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('idType')">⧉</button></div></div>
-        <input data-key="idType" id="idType" type="text" value="">
-      </div>
-      <div class="field" data-search="">
         <div class="fieldtop"><label>证件号码</label><div class="fieldtools"><span class="badge danger">敏感</span><button class="icon" onclick="copyKey('idNumber')">⧉</button></div></div>
         <input data-key="idNumber" id="idNumber" type="text" placeholder="请自行补全；不从截图猜测">
       </div>
-      <div class="field" data-search="">
-        <div class="fieldtop"><label>出生日期</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('birthdayCompact')">⧉</button></div></div>
-        <input data-key="birthdayCompact" id="birthdayCompact" type="text" value="">
-        <div class="hint">网页常用格式：YYYYMMDD。</div>
-      </div>
-
       <div class="field" data-search="">
         <div class="fieldtop"><label>民族</label><div class="fieldtools"><span class="badge">必填</span><button class="icon" onclick="copyKey('ethnicity')">⧉</button></div></div>
         <input data-key="ethnicity" id="ethnicity" type="text" value="">
@@ -264,16 +241,12 @@
   <section id="language">
     <div class="head">
       <div><h3>05 · 外语水平</h3><p>每一项外语成绩单独一行；系统填几项，通常就要上传几张对应证明。</p></div>
-      <div class="actions"><button class="btn small" onclick="copyTable('languageTable','外语水平')">复制表格</button></div>
+      <div class="actions"><button class="btn small" onclick="addTableRow('languageTable')">＋ 添加一项</button><button class="btn small" onclick="copyTable('languageTable','外语水平')">复制表格</button></div>
     </div>
     <div class="tablewrap">
       <table id="languageTable">
-        <thead><tr><th>外语水平</th><th>成绩</th><th>取得成绩时间</th><th>备注</th></tr></thead>
-        <tbody>
-          <tr><td><input data-key="lang1Type" value=""></td><td><input data-key="lang1Score" value=""></td><td><input data-key="lang1Date" value=""></td><td><input data-key="lang1Note"></td></tr>
-          <tr><td><input data-key="lang2Type" value=""></td><td><input data-key="lang2Score" value=""></td><td><input data-key="lang2Date" value=""></td><td><input data-key="lang2Note"></td></tr>
-          <tr><td><input data-key="lang3Type" placeholder="IELTS / TOEFL / 其他"></td><td><input data-key="lang3Score"></td><td><input data-key="lang3Date" placeholder="YYYY-MM"></td><td><input data-key="lang3Note"></td></tr>
-        </tbody>
+        <thead><tr><th>外语水平</th><th>成绩</th><th>取得成绩时间</th><th>备注</th><th class="action-column">操作</th></tr></thead>
+        <tbody></tbody>
       </table>
     </div>
   </section>
@@ -284,9 +257,14 @@
       <div class="actions"><button class="btn small" onclick="copySection('practice')">复制本区</button><button class="btn small" onclick="copySanitizedPractice()">复制去标点版</button></div>
     </div>
     <div class="grid">
-      <div class="field span2" data-search="">
-        <div class="fieldtop"><label>科研训练（起止时间、项目名称、项目级别、排名）</label><div class="fieldtools"><span class="badge">官网字段</span><button class="icon" onclick="copyKey('researchTraining')">⧉</button></div></div>
-        <textarea class="tall" data-key="researchTraining" id="researchTraining"></textarea>
+      <div class="span2 dynamic-block">
+        <div class="subhead"><strong>科研训练</strong><button class="btn small" onclick="addTableRow('researchTable')">＋ 添加一项</button></div>
+        <div class="tablewrap">
+          <table id="researchTable">
+            <thead><tr><th>起止时间</th><th>项目名称</th><th>项目级别</th><th>排名 / 职责</th><th>主要内容</th><th class="action-column">操作</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
       </div>
       <div class="field span2" data-search="">
         <div class="fieldtop"><label>实习实践（起止时间、实习单位、主要工作内容）</label><div class="fieldtools"><span class="badge">官网字段</span><button class="icon" onclick="copyKey('internshipExperience')">⧉</button></div></div>
@@ -327,17 +305,12 @@
 
     <div class="head" style="margin-top:20px">
       <div><h3 style="font-size:15px">学科竞赛</h3><p>对应官网字段：获奖人、获奖项目名称、竞赛名称、获奖等级、获奖时间。</p></div>
-      <div class="actions"><button class="btn small" onclick="copyTable('competitionTable','学科竞赛')">复制表格</button></div>
+      <div class="actions"><button class="btn small" onclick="addTableRow('competitionTable')">＋ 添加一项</button><button class="btn small" onclick="copyTable('competitionTable','学科竞赛')">复制表格</button></div>
     </div>
     <div class="tablewrap">
       <table id="competitionTable">
-        <thead><tr><th>获奖人 / 排名</th><th>获奖项目名称</th><th>竞赛名称</th><th>获奖等级</th><th>获奖时间</th></tr></thead>
-        <tbody>
-          <tr><td><input data-key="comp1Person" value=""></td><td><input data-key="comp1Project" value=""></td><td><input data-key="comp1Name" value=""></td><td><input data-key="comp1Level" value=""></td><td><input data-key="comp1Date" value=""></td></tr>
-          <tr><td><input data-key="comp2Person" value=""></td><td><input data-key="comp2Project" value=""></td><td><input data-key="comp2Name" value=""></td><td><input data-key="comp2Level" value=""></td><td><input data-key="comp2Date" value=""></td></tr>
-          <tr><td><input data-key="comp3Person" value=""></td><td><input data-key="comp3Project" value=""></td><td><input data-key="comp3Name" value=""></td><td><input data-key="comp3Level" value=""></td><td><input data-key="comp3Date" value=""></td></tr>
-          <tr><td><input data-key="comp4Person" value=""></td><td><input data-key="comp4Project" value=""></td><td><input data-key="comp4Name" value=""></td><td><input data-key="comp4Level" value=""></td><td><input data-key="comp4Date" value=""></td></tr>
-        </tbody>
+        <thead><tr><th>获奖人 / 排名</th><th>获奖项目名称</th><th>竞赛名称</th><th>获奖等级</th><th>获奖时间</th><th class="action-column">操作</th></tr></thead>
+        <tbody></tbody>
       </table>
     </div>
   </section>
@@ -345,16 +318,25 @@
   <section id="awards">
     <div class="head">
       <div><h3>08 · 奖励情况</h3><p>只填本科期间校级以上（含）荣誉奖励，不与学科竞赛混填。</p></div>
-      <div class="actions"><button class="btn small" onclick="copyTable('awardTable','荣誉奖励')">复制表格</button></div>
+      <div class="actions"><button class="btn small" onclick="addTableRow('awardTable')">＋ 添加一项</button><button class="btn small" onclick="copyTable('awardTable','荣誉奖励')">复制表格</button></div>
     </div>
     <div class="tablewrap">
       <table id="awardTable">
-        <thead><tr><th>获奖名称</th><th>获奖等级</th><th>获奖时间</th><th>备注</th></tr></thead>
-        <tbody>
-          <tr><td><input data-key="award1Name" value=""></td><td><input data-key="award1Level" value=""></td><td><input data-key="award1Date" value=""></td><td><input data-key="award1Note"></td></tr>
-          <tr><td><input data-key="award2Name" placeholder="请按证书补充"></td><td><input data-key="award2Level" placeholder="校级/省级/国家级"></td><td><input data-key="award2Date" placeholder="YYYY年"></td><td><input data-key="award2Note"></td></tr>
-          <tr><td><input data-key="award3Name" placeholder="可选"></td><td><input data-key="award3Level"></td><td><input data-key="award3Date"></td><td><input data-key="award3Note"></td></tr>
-        </tbody>
+        <thead><tr><th>获奖名称</th><th>获奖等级</th><th>获奖时间</th><th>备注</th><th class="action-column">操作</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="custom">
+    <div class="head">
+      <div><h3>自定义字段</h3><p>遇到页面中没有的报名字段，可以在这里单独保存。</p></div>
+      <div class="actions"><button class="btn small" onclick="addTableRow('customTable')">＋ 添加字段</button><button class="btn small" onclick="copyTable('customTable','自定义字段')">复制表格</button></div>
+    </div>
+    <div class="tablewrap">
+      <table id="customTable">
+        <thead><tr><th>字段名称</th><th>内容</th><th>备注</th><th class="action-column">操作</th></tr></thead>
+        <tbody></tbody>
       </table>
     </div>
   </section>
