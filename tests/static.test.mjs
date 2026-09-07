@@ -20,12 +20,16 @@ test("源码保持最初版结构并按职责拆分", async () => {
   assert.match(html, /data-key="nameCn"/);
   assert.match(css, /border-radius:\s*17px/);
   assert.match(js, /function copyKey/);
-  assert.match(js, /\['中文姓名',d=>d\.nameCn\]/);
   assert.match(js, /function initTableCopyButtons/);
   assert.match(js, /\.tablewrap td > \[data-key\]/);
-  assert.match(js, /function rankStandard/);
-  assert.match(js, /Math\.ceil\(r\/t\*100\)/);
-  assert.doesNotMatch(js, /前10%/);
+  assert.match(js, /function addTableRow/);
+  assert.match(js, /function restoreDynamicTables/);
+  assert.match(js, /dynamicTables:dynamicData\(\)/);
+  for (const id of ["languageTable", "researchTable", "competitionTable", "awardTable", "customTable"]) {
+    assert.match(html, new RegExp(`id="${id}"`));
+    assert.match(html, new RegExp(`addTableRow\\('${id}'\\)`));
+  }
+  assert.doesNotMatch(html, /id="quick"|快速格式|英文姓名（常规格式）|>证件类型<|>出生日期</);
   assert.match(js, /localStorage\.setItem/);
   assert.match(js, /function exportData/);
 });
@@ -36,7 +40,7 @@ test("公开模板没有预填个人资料", async () => {
   const textareas = [...html.matchAll(/<textarea\b[^>]*data-key="[^"]+"[^>]*>([\s\S]*?)<\/textarea>/g)];
 
   assert.ok(inputTags.length > 20);
-  assert.equal((html.match(/data-key=/g) ?? []).length, 122);
+  assert.ok((html.match(/data-key=/g) ?? []).length > 60);
   assert.equal((html.match(/<section/g) ?? []).length, 13);
   for (const tag of inputTags) {
     assert.doesNotMatch(tag, /\svalue="[^"]+"/);

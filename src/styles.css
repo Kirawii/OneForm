@@ -90,6 +90,7 @@ section{padding:23px;margin-bottom:17px;scroll-margin-top:94px}
   min-width:0;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--panel)
 }
 .field.hidden{display:none}
+.tablewrap tr.hidden{display:none}
 .fieldtop{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:7px}
 .field label{font-size:12px;font-weight:720}
 .fieldtools{display:flex;gap:5px}
@@ -123,6 +124,12 @@ td textarea{min-height:65px}
 .table-input-wrap{display:grid;grid-template-columns:minmax(125px,1fr) 28px;align-items:center;gap:6px}
 .table-input-wrap>input,.table-input-wrap>textarea,.table-input-wrap>select{min-width:0}
 .table-copy{background:var(--panel2);flex:none}
+.action-column{width:62px;text-align:center}
+.row-action{text-align:center;vertical-align:middle}
+.row-remove{color:var(--muted)}
+.row-remove:hover{border-color:var(--danger);color:var(--danger)}
+.dynamic-block{min-width:0}
+.subhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px;font-size:12px}
 tr:last-child td{border-bottom:0}
 .copystrip{
   margin-top:10px;padding:11px 12px;border:1px dashed var(--line);border-radius:10px;
