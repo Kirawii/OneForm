@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="OneForm：填写一次，报名时直接复制。无需登录，支持在线使用和离线下载。">
+  <meta name="description" content="OneForm 免费开源推免报名工具：保存常用资料，搜索后直接复制；支持增删竞赛奖励、PDF 合并生成目录和证件照裁剪。无需注册，支持离线下载。">
   <meta name="theme-color" content="#f5f5f2">
   <meta property="og:title" content="OneForm">
-  <meta property="og:description" content="填写一次，报名时直接复制。">
+  <meta property="og:description" content="保存报名资料，随用随复制。附带 PDF 合并、材料目录和证件照工具，免费开源，无需注册。">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="product-preview.svg">
+  <meta property="og:image" content="https://kirawii.github.io/OneForm/product-preview.svg">
   <meta property="og:url" content="https://kirawii.github.io/OneForm/">
   <link rel="canonical" href="https://kirawii.github.io/OneForm/">
   <title>OneForm | 填写一次，随用随复制</title>
@@ -33,16 +33,16 @@
     <section class="hero shell">
       <div class="hero-grid">
         <div>
-          <p class="eyebrow">本地保存，无需登录</p>
+          <p class="eyebrow">免费开源 · 无需注册</p>
           <h1>填一次，报名时直接复制</h1>
-          <p class="lead">把重复资料集中整理，报名时找到字段，一键复制到学校系统。</p>
+          <p class="lead">姓名、成绩、竞赛和经历放在一起。填学校系统时，找到需要的内容，复制粘贴即可。</p>
           <div class="hero-actions">
             <a class="button primary" href="oneform.html">在线使用</a>
             <a class="button" href="oneform.html" download>下载离线版</a>
           </div>
         </div>
         <figure class="preview">
-          <img src="product-preview.svg" width="1440" height="900" alt="OneForm 页面预览">
+          <img src="product-preview.svg" width="1440" height="900" alt="OneForm 资料页示意：左侧目录、搜索栏与逐项复制按钮，不含个人资料">
         </figure>
       </div>
     </section>
@@ -50,21 +50,21 @@
     <div class="privacy-bar shell">
       <div>
         <strong>你的资料默认留在当前浏览器</strong>
-        <p>项目没有账号系统，也不会主动把填写内容上传到服务器。</p>
+        <p>填写内容不会上传，也不会自动同步到其他设备。换设备前，在“更多”中下载备份。</p>
       </div>
     </div>
 
     <section class="section" id="how">
       <div class="shell guide-layout">
         <div class="guide-aside">
-          <h2>打开就会用</h2>
-          <p>不需要安装软件，不需要懂代码。使用过程只有填写、复制和备份。</p>
+          <h2>从填写到复制</h2>
+          <p>打开网页即可使用。报名由你在学校系统中完成。</p>
           <a class="button" href="guide.html">查看完整指引</a>
         </div>
         <div class="guide-list">
           <div class="guide-row">
             <h3>先填写自己的资料</h3>
-            <p>从基本信息开始，按左侧目录逐项填写。页面会自动保存。</p>
+            <p>按左侧目录填写，页面会自动保存。外语、科研、竞赛和奖励可随时增删，额外信息填在“自定义字段”中。</p>
           </div>
           <div class="guide-row">
             <h3>报名时点击复制</h3>
@@ -73,6 +73,26 @@
           <div class="guide-row">
             <h3>定期导出备份</h3>
             <p>在“更多”中点击“下载备份”，把文件保存在自己的电脑里。更换浏览器或电脑时可以恢复。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="materials">
+      <div class="shell guide-layout">
+        <div class="guide-aside">
+          <h2>附件也能一起整理</h2>
+          <p>PDF 和照片在浏览器中处理。关闭或刷新页面前，请下载结果。</p>
+          <a class="button" href="materials.html">打开材料工具</a>
+        </div>
+        <div class="guide-list">
+          <div class="guide-row">
+            <h3>合并 PDF，附上材料目录</h3>
+            <p>添加文件后，通过缩略图排序、旋转或删除页面。为材料命名，目录页码会随顺序更新，完成后合并下载。</p>
+          </div>
+          <div class="guide-row">
+            <h3>按要求裁剪证件照</h3>
+            <p>选择尺寸或输入像素，调整位置和缩放。原图不足时可等比例放大；JPG 可设置目标大小，下载前查看实际结果。</p>
           </div>
         </div>
       </div>
@@ -123,6 +143,14 @@
             <p>导出的 JSON 文件是明文，任何拿到文件的人都可能读到内容。请保存在自己的设备中，不要公开分享。</p>
           </details>
           <details>
+            <summary>竞赛或奖励太多，填不下怎么办？</summary>
+            <p>在对应栏目点击“添加竞赛”或“添加奖励”即可增加条目。需要额外信息时，可添加自定义字段。每个输入框旁都有复制按钮。</p>
+          </details>
+          <details>
+            <summary>能自动填学校系统吗？</summary>
+            <p>目前需要自己复制粘贴。OneForm 不会读取学校系统、自动填表或替你提交申请。</p>
+          </details>
+          <details>
             <summary>手机可以使用吗？</summary>
             <p>可以打开和查看，但报名通常还要处理证明材料，建议使用电脑完成正式填报。</p>
           </details>
@@ -144,6 +172,7 @@
         <a href="guide.html">用户指引</a>
         <a href="guide.html#privacy">隐私说明</a>
         <a href="https://github.com/Kirawii/OneForm">GitHub</a>
+        <a href="https://github.com/Kirawii/OneForm/issues">反馈问题</a>
         <span>MIT License</span>
       </div>
     </div>
